@@ -1,18 +1,30 @@
 public interface Command {
-    public void execute();
+    public int execute();
 }
 
-class loginCommand implements Command {
+class loginStudentCommand implements Command {
+    private Student student;
+    private String name;
+    private String pass;
     @Override
-    public void execute() {
+    public int execute() {
 
+        return student.login(name, pass);
     }
 }
+class loginTeacherCommand implements Command {
+    @Override
+    public int execute() {
+        ;
+        return 11;
+    }
+}
+
 
 class quitGroupCommand implements Command {
 
     @Override
-    public void execute() {
+    public int execute() {
 
     }
 }
@@ -20,15 +32,23 @@ class quitGroupCommand implements Command {
 class joinCommand implements Command {
 
     @Override
-    public void execute() {
+    public int execute() {
 
     }
 }
 
-class registerCommand implements Command {
+class registerstudentCommand implements Command {
 
     @Override
-    public void execute() {
+    public int execute() {
+
+    }
+}
+
+class registerteacherCommand implements Command {
+
+    @Override
+    public int execute() {
 
     }
 }
@@ -36,7 +56,7 @@ class registerCommand implements Command {
 class createGroupCommand implements Command {
 
     @Override
-    public void execute() {
+    public int execute() {
 
     }
 }
@@ -44,7 +64,7 @@ class createGroupCommand implements Command {
 class changeNameCommand implements Command {
 
     @Override
-    public void execute() {
+    public int execute() {
 
     }
 }
@@ -52,7 +72,7 @@ class changeNameCommand implements Command {
 class createTestCommand implements Command {
 
     @Override
-    public void execute() {
+    public int execute() {
 
     }
 }
@@ -60,7 +80,7 @@ class createTestCommand implements Command {
 class addQuestationCommand implements Command {
 
     @Override
-    public void execute() {
+    public int execute() {
 
     }
 }
@@ -68,7 +88,7 @@ class addQuestationCommand implements Command {
 class releaseMarkCommand implements Command {
 
     @Override
-    public void execute() {
+    public int execute() {
 
     }
 }
@@ -76,7 +96,7 @@ class releaseMarkCommand implements Command {
 class inviteCommand implements Command {
 
     @Override
-    public void execute() {
+    public int execute() {
 
     }
 }
@@ -84,7 +104,7 @@ class inviteCommand implements Command {
 class deleteMemberCommand implements Command {
 
     @Override
-    public void execute() {
+    public int execute() {
 
     }
 }
@@ -92,7 +112,7 @@ class deleteMemberCommand implements Command {
 class createAnnouncementCommand implements Command {
 
     @Override
-    public void execute() {
+    public int execute() {
 
     }
 }
@@ -100,7 +120,7 @@ class createAnnouncementCommand implements Command {
 class submitCommand implements Command {
 
     @Override
-    public void execute() {
+    public int execute() {
 
     }
 }
