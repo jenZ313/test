@@ -1,7 +1,3 @@
-import java.sql.*;
-import java.util.Scanner;
-
-public class mySqlTest {
     public static Connection getConnection() {
         Connection conn = null;
         String driver = "com.mysql.cj.jdbc.Driver";//驱动程序名
@@ -100,17 +96,3 @@ public class mySqlTest {
         statement.executeUpdate(sql);
         System.out.println("Created table in given database...");
     }
-
-    public static void main(String[] args) throws SQLException {
-//        createTable();
-//        Scanner scanner = new Scanner(System.in);
-//        String name = scanner.nextLine();
-//        String pass = scanner.nextLine();
-//        Student s1 = new Student(name, pass);
-//        Boolean b = insertStudent(s1);
-//        System.out.println(b);
-        System.out.println(checkStudentLogin("testname1","testpass1"));
-
-    }
-
-}
