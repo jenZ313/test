@@ -154,10 +154,19 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        Command c = new registerCommand("j1","pass","jacky.jiang@mail.utoronto.ca",12);
-        c.execute();
-        Command c1 = new forgetPassCommand("j1");
-        c1.execute();
+//        Command c = new registerCommand("j1","pass","jacky.jiang@mail.utoronto.ca",12);
+//        c.execute();
+//        Command c1 = new forgetPassCommand("j1");
+//        c1.execute();
+//        Command c = new registerCommand("jacky","123456","jacky.shanyi@mail.utoronto.ca",11);
+//        int ID = c.execute();
+//        System.out.println(ID);
+//
+//        Command a = new joinGroupCommand(6, 7);
+//        a.execute();
+        Command c = new deleteGroupCommand(5, 3);
+        System.out.println(c.execute());
+
     }
 
 }
