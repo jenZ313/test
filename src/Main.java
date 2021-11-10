@@ -178,10 +178,18 @@ public class Main {
 //        c.execute();
 //        Command c = new createAnnouncementCommand("Hi, guys");
 //        System.out.println(c.execute());
-          Command c = new deleteMemberCommand(2,1,4);
+          Command c = new deleteMemberCommand(2,1,3);
           c.execute();
-//        Command d = new joinGroupCommand(1, 4);
+//        Command a = new registerCommand("a", "1232456", "aaaaaaa", 12);
+//        a.execute();
+//        Command b = new registerCommand("b", "123456", "aaaa", 12);
+//        b.execute();
+//        Command d = new joinGroupCommand(2, 3);
 //        d.execute();
+//        Command e = new joinGroupCommand(1, 3);
+//        e.execute();
+//        Command f = new joinGroupCommand(3, 3);
+//        f.execute();
     }
 
 }

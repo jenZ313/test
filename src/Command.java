@@ -136,7 +136,7 @@ public class Command {
             if (allusers.length() == IDLength) {
                 newusers = "";
             } else {
-                newusers = allusers.substring(0, index) + allusers.substring(index + IDLength);
+                newusers = allusers.substring(0, index) + allusers.substring(index + IDLength + 1);
             }
             ////rewrite the new string to the database
             PreparedStatement preparedStatement = connection.prepareStatement(updateSql);
@@ -511,7 +511,7 @@ class joinGroupCommand extends Command {
                 return GROUPALREADYJOINED;
             }
             if (allGroups.length() == 0) {
-                allGroups = groupID + "";
+                allGroups = groupID + " ";
             } else {
                 allGroups = allGroups + "," + groupID;
             }
@@ -531,9 +531,9 @@ class joinGroupCommand extends Command {
             String allStudents = resultSet.getString(STUDENTIDCOLINGROUP);
             ////add studentID to the group
             if (allStudents.length() == 0) {
-                allStudents = studentID + "";
+                allStudents = studentID + " ";
             } else {
-                allStudents = allStudents + "," + studentID;
+                allStudents = studentID + "," + allStudents;
             }
             ////rewrite the new string to the database
             sql = "update STUDYGROUP set students = ? where id = ?";
@@ -602,9 +602,9 @@ class createGroupCommand extends Command {
             resultSet.next();
             String allGroups = resultSet.getString(6);
             if (allGroups.length() == 0) {
-                allGroups = groupID + "";
+                allGroups = groupID + " ";
             } else {
-                allGroups = allGroups + "," + groupID;
+                allGroups = groupID + "," + allGroups;
             }
             sql = "update TEACHER set groupID = ? where id = ?";
             preparedStatement = connection.prepareStatement(sql);
