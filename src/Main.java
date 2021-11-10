@@ -154,6 +154,10 @@ public class Main {
     }
 
     public static void main(String[] args) {
+        Command c = new registerCommand("j1","pass","jacky.jiang@mail.utoronto.ca",12);
+        c.execute();
+        Command c1 = new forgetPassCommand("j1");
+        c1.execute();
     }
 
 }

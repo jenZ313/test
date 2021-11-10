@@ -37,5 +37,8 @@
         <jarDirectory url="file://$USER_HOME$/Downloads/mysql-connector-java-8.0.27" recursive="false" />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="Java EE 6-Java EE 6" level="project" />
+    <orderEntry type="library" name="javax.mail" level="project" />
+    <orderEntry type="library" name="jaf-1.1" level="project" />
   </component>
 </module>
