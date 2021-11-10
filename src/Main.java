@@ -36,6 +36,7 @@ public class Main {
                     " email VARCHAR(255), " +
                     " words VARCHAR(1000), " +
                     " groupID VARCHAR(1000), " +
+                    " testID VARCHAR(1000), " +
                     " level INT, " +
                     " PRIMARY KEY ( id ))";
             statement.executeUpdate(sql);
@@ -60,6 +61,7 @@ public class Main {
                     " date Date, " +
                     " email VARCHAR(255), " +
                     " groupID VARCHAR(1000), " +
+                    " testID VARCHAR(1000), " +
                     " PRIMARY KEY ( id ))";
             statement.executeUpdate(sql);
             System.out.println("Created teacher table in given database...");
@@ -119,8 +121,8 @@ public class Main {
             String sql = "CREATE TABLE IF NOT EXISTS TEST " +
                     "(id INT UNSIGNED AUTO_INCREMENT, " +
                     " name VARCHAR(16), " +
-                    " author VARCHAR(16), " +
-                    " time INT, " +
+                    " author INT, " +
+                    " date DATE, " +
                     " price INT, " +
                     " questions VARCHAR(1000), " +
                     " PRIMARY KEY ( id )) CHARACTER SET = utf8";
@@ -140,6 +142,7 @@ public class Main {
             Statement statement = connection.createStatement();
             String sql = "CREATE TABLE IF NOT EXISTS QUESTION " +
                     "(id INT UNSIGNED AUTO_INCREMENT, " +
+                    " name VARCHAR(16), " +
                     " question VARCHAR(1000), " +
                     " answer VARCHAR(1000), " +
                     " PRIMARY KEY ( id )) CHARACTER SET = utf8";
@@ -158,15 +161,27 @@ public class Main {
 //        c.execute();
 //        Command c1 = new forgetPassCommand("j1");
 //        c1.execute();
-//        Command c = new registerCommand("jacky","123456","jacky.shanyi@mail.utoronto.ca",11);
-//        int ID = c.execute();
+//        Command d = new registerCommand("jacky","123456","jacky.shanyi@mail.utoronto.ca",11);
+//        int ID = d.execute();
 //        System.out.println(ID);
 //
 //        Command a = new joinGroupCommand(6, 7);
 //        a.execute();
-        Command c = new deleteGroupCommand(5, 3);
-        System.out.println(c.execute());
-
+//        Command c = new deleteGroupCommand(5, 3);
+//        System.out.println(c.execute());
+//        iniStudentTable();
+//        iniTeacherTable();
+//        Command c = new quitGroupCommand(4, 7);
+//        System.out.println(c.execute());
+//        iniTestTable();
+//        Command c = new createTestCommand("testexample", 1, 10);
+//        c.execute();
+//        Command c = new createAnnouncementCommand("Hi, guys");
+//        System.out.println(c.execute());
+          Command c = new deleteMemberCommand(2,1,4);
+          c.execute();
+//        Command d = new joinGroupCommand(1, 4);
+//        d.execute();
     }
 
 }
