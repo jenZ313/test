@@ -222,8 +222,8 @@ public class Main {
 //        c.execute();
 //        Command c = new createAnnouncementCommand("Hi, guys again");
 //        System.out.println(c.execute());
-//          Command c = new deleteMemberCommand(2,1,3);
-//          c.execute();
+//        Command c = new deleteMemberCommand(2,1,3);
+//        c.execute();
 //        Command a = new registerCommand("a", "1232456", "aaaaaaa", 12);
 //        a.execute();
 //        Command b = new registerCommand("b", "123456", "aaaa", 12);
@@ -247,7 +247,27 @@ public class Main {
 //        c.execute();
 //          Command c = new createGroupCommand(1, "test");
 //          c.execute();
-        iniTAnswerTable();
+//        Command a1 = new registerCommand("jen12", "passads", "qdqq", 12);
+//        a1.execute();
+//        Command a2 = new joinGroupCommand(5, 1);
+//        System.out.println(a2.execute());
+//        Command a3 = new quitGroupCommand(id,1);
+//        System.out.println(a3.execute());
+//        Command c = new submitCommand(1,"a", 1);
+//        c.execute();
+//        Command d = new submitCommand(1,"a", 2);
+//        d.execute();
+//        Command c  = new gradeTest(1,1);
+//        c.execute();
+//        Command c = new addQuestionToTestCommand(1, 2);
+//        c.execute();
+//        Command d = new addQuestionToTestCommand(2, 2);
+//        d.execute();
+//        Command c = new gradeTest(1, 2);
+//        c.execute();
+//        Command c = new getStudentAve(1);
+//        System.out.println(c.execute());;
+
     }
 
 }
