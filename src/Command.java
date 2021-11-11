@@ -1265,21 +1265,11 @@ class getStudentAve extends Command {
         }
     }
 }
-
 //int studentID, int groupID, int type --> String toodo/finished test ids
-class getStudentTest extends Command {
-
-}
-
-//class submitCommand extends Command {
+//class getStudentTest extends Command {
 //
-//    @Override
-//    public int execute() {
-//
-//    }
 //}
 
-//addQuestiontoTest
 //getWords
 
 
