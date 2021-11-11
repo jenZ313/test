@@ -98,7 +98,7 @@ public class Command {
             if (!hasMatch) {
                 statement.close();
                 connection.close();
-                return 4;
+                return FAILED;
             }
             String allGroups = resultSet.getString(col);//in the form of "21,20,23,4"
             ////remove groupID from the string
@@ -107,7 +107,7 @@ public class Command {
             if (index == -1) {
                 statement.close();
                 connection.close();
-                return 5;
+                return FAILED;
             }
             int IDLength = (groupID + "").length();
             String newGroups;
@@ -127,7 +127,7 @@ public class Command {
             return SUCCESS;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
-            return 6;
+            return FAILED;
         }
     }
 
@@ -678,8 +678,7 @@ class deleteGroupCommand extends Command {
             if (!hasMatch) {
                 statement.close();
                 connection.close();
-                return 2;
-//                return FAILED;
+               return FAILED;
             }
             String allStudents = resultSet.getString(STUDENTIDCOLINGROUP);//in the form of "21,20,23,4 "
 
