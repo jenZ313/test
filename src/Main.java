@@ -267,7 +267,6 @@ public class Main {
 //        c.execute();
 //        Command c = new getStudentAve(1);
 //        System.out.println(c.execute());;
-
     }
 
 }
