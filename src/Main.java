@@ -20,8 +20,7 @@ public class Main {
     }
 
     public static boolean ini() {
-        return iniGroupTable() && iniTestTable() && iniWordTable() && iniQuestionTable() && iniStudentTable() &&
-                iniTeacherTable() && iniQAnswerTable() && iniTAnswerTable();
+        return iniGroupTable() && iniTestTable() && iniWordTable() && iniQuestionTable() && iniStudentTable() && iniTeacherTable();
 
     }
 
@@ -38,7 +37,6 @@ public class Main {
                     " words VARCHAR(1000), " +
                     " groupID VARCHAR(1000), " +
                     " testID VARCHAR(1000), " +
-                    " answerID VARCHAR(1000), " +
                     " level INT, " +
                     " PRIMARY KEY ( id ))";
             statement.executeUpdate(sql);
@@ -158,86 +156,11 @@ public class Main {
         }
     }
 
-    public static boolean iniQAnswerTable() {
-        try {
-            Connection connection = getConnection();
-            Statement statement = connection.createStatement();
-            String sql = "CREATE TABLE IF NOT EXISTS QUESTIONANSWER " +
-                    "(id INT UNSIGNED AUTO_INCREMENT, " +
-                    " questionID INT, " +
-                    " answer VARCHAR(1000), " +
-                    " mark INT , " +
-                    " PRIMARY KEY ( id )) CHARACTER SET = utf8";
-            statement.executeUpdate(sql);
-            System.out.println("Created answer table in given database...");
-            statement.close();
-            connection.close();
-            return true;
-        } catch (SQLException e) {
-            return false;
-        }
-    }
-
-    public static boolean iniTAnswerTable() {
-        try {
-            Connection connection = getConnection();
-            Statement statement = connection.createStatement();
-            String sql = "CREATE TABLE IF NOT EXISTS TESTANSWER " +
-                    "(id INT UNSIGNED AUTO_INCREMENT, " +
-                    " testID INT, " +
-                    " answerID INT, " +
-                    " PRIMARY KEY ( id )) CHARACTER SET = utf8";
-            statement.executeUpdate(sql);
-            System.out.println("Created answer table in given database...");
-            statement.close();
-            connection.close();
-            return true;
-        } catch (SQLException e) {
-            return false;
-        }
-    }
-
     public static void main(String[] args) {
-//        Command c = new registerCommand("j1","pass","jacky.jiang@mail.utoronto.ca",12);
-//        c.execute();
-//        Command c1 = new forgetPassCommand("j1");
-//        c1.execute();
-//        Command d = new registerCommand("jacky","123456","jacky.shanyi@mail.utoronto.ca",11);
-//        int ID = d.execute();
-//        System.out.println(ID);
-//
-//        Command a = new joinGroupCommand(6, 7);
-//        a.execute();
-//        Command c = new deleteGroupCommand(2, 3);
-//        System.out.println(c.execute());
-//        iniStudentTable();
-//        iniTeacherTable();
-//        Command c = new quitGroupCommand(3, 4);
-//        System.out.println(c.execute());
-//        iniTestTable();
-//        Command c = new createTestCommand("testexample", 1, 10);
-//        c.execute();
-//        Command c = new createAnnouncementCommand("Hi, guys again");
-//        System.out.println(c.execute());
-//          Command c = new deleteMemberCommand(2,1,3);
-//          c.execute();
-//        Command a = new registerCommand("a", "1232456", "aaaaaaa", 12);
-//        a.execute();
-//        Command b = new registerCommand("b", "123456", "aaaa", 12);
-//        b.execute();
-//        Command d = new joinGroupCommand(2, 11);
-//        d.execute();
-//        Command e = new joinGroupCommand(1, 11);
-//        e.execute();
-//        Command f = new joinGroupCommand(3, 11);
-//        f.execute();
-//        Command c = new addQuestationCommand("question1", "banana", "香蕉");
-//        c.execute();
-//        Command c = new createGroupCommand(1, "group5");
-//        c.execute();
-//        iniQAnswerTable();
-        Command c = new addQuestionToTestCommand(1, 1);
-        c.execute();
+
+
+        Command d = new createGroupCommand(2,"mygoup11");
+        System.out.println(d.execute());
     }
 
 }
