@@ -188,6 +188,7 @@ public class Main {
                     "(id INT UNSIGNED AUTO_INCREMENT, " +
                     " testID INT, " +
                     " studentID INT, " +
+                    " mark INT, " +
                     " PRIMARY KEY ( id )) CHARACTER SET = utf8";
             statement.executeUpdate(sql);
             System.out.println("Created answer table in given database...");
@@ -244,8 +245,9 @@ public class Main {
 //        System.out.println(c.execute());
 //        Command c= new submitCommand(2,"香蕉",1);
 //        c.execute();
-          Command c = new createGroupCommand(1, "test");
-          c.execute();
+//          Command c = new createGroupCommand(1, "test");
+//          c.execute();
+        iniTAnswerTable();
     }
 
 }
