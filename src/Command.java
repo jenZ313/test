@@ -1,21 +1,19 @@
-//These are gateways
-
 import java.sql.*;
-import java.util.Properties;
-import java.util.Random;
-import java.util.*;
-import javax.mail.*;
-import javax.mail.internet.*;
-import javax.activation.*;
+//import java.util.Properties;
+//import java.util.Random;
+//import java.util.*;
+//import javax.mail.*;
+//import javax.mail.internet.*;
+//import javax.activation.*;
 
 public class Command {
     public final int SUCCESS = 0;
     public final int FAILED = -1;
     public final int USERNAMEALREADYUSED = -2;
     public final int GROUPALREADYJOINED = -3;
-    public final int NOTREGISTERED = -4;
-    public final int TESTNAMEALREADYUSED = -5;
-    public final int QUESTIONNAMEALREADYUSED = -6;
+//    public final int NOTREGISTERED = -4;
+//    public final int TESTNAMEALREADYUSED = -5;
+//    public final int QUESTIONNAMEALREADYUSED = -6;
     public final int TEACHER = 11;
     public final int STUDENT = 12;
 
@@ -24,17 +22,17 @@ public class Command {
     public final int GETGROUPTEACHER = 22;
     public final int GETGROUPSTUDENT = 23;
     public final int GETGROUPANNOUNCEMENT = 24;
-    public final int GETGROUPTEST = 25;
+//    public final int GETGROUPTEST = 25;
 
-    public final int GETSTUDENTFINSHEDTEST = 31;
-    public final int GETSTUDENTTODOTEST = 32;
+//    public final int GETSTUDENTFINSHEDTEST = 31;
+//    public final int GETSTUDENTTODOTEST = 32;
 
     public final String STUDENTTABLENAME = "STUDENT";
     public final String TEACHERTABLENAME = "TEACHER";
     public final String GROUPTABLENAME = "STUDYGROUP";
     public final String QUESTIONTABLENAME = "QUESTION";
     public final String QUESTIONANSWERTABLENAME = "QUESTIONANSWER";
-    public final String TESTTABLENAME = "TEST";
+//    public final String TESTTABLENAME = "TEST";
 
 
     public final int NAMECOLINGROUP = 2;
@@ -45,12 +43,12 @@ public class Command {
 
     public final int GROUPIDCOLINTEACHER = 6;
     public final int GROUPIDCOLINSTUDENT = 7;
-    public final int EMAILINSTUDENT = 5;
-    public final int EMAILINTEACHER = 5;
+//    public final int EMAILINSTUDENT = 5;
+//    public final int EMAILINTEACHER = 5;
 
     public final int ANSWERCOLINQUESTION = 4;
     public final int ANSWERCOLINQUESTIONANSWER = 3;
-    public final int MARKCOLINQUESTIONANSWER = 3;
+//    public final int MARKCOLINQUESTIONANSWER = 3;
     public final int QUESTIONIDCOLINQUESTIONANSWER = 2;
 
 
@@ -124,7 +122,7 @@ public class Command {
     }
 
     public int removeUserFromGroup(int userID, int groupID, Connection connection, Statement statement) {
-        String table = GROUPTABLENAME;
+        String table = "STUDYGROUP";
         int col = 4;
         String updateSql = "update STUDYGROUP set students = ? where id = ?";
         try {
@@ -163,8 +161,8 @@ public class Command {
 
     public boolean isInString(String string, int id, String split) {
         String[] array = string.split(split);
-        for (int i = 0; i < array.length; i++) {
-            if (array[i].trim().equals(id + "")) {
+        for (String s : array) {
+            if (s.trim().equals(id + "")) {
                 return true;
             }
         }
@@ -273,8 +271,8 @@ public class Command {
 
 //String name,String pass -> an id/FAILED
 class loginCommand extends Command {
-    private String name;
-    private String pass;
+    private final String name;
+    private final String pass;
 
     public loginCommand(String name, String pass) {
         this.name = name;
@@ -364,10 +362,10 @@ class checkIdentity extends Command {
 
 //String name, String pass, String email, int type(teacher11, student12)-> USERNAMEALREADYUSED/SUCCESS/FAILED
 class registerCommand extends Command {
-    private String name;
-    private String pass;
-    private String email;
-    private int type;
+    private final String name;
+    private final String pass;
+    private final String email;
+    private final int type;
 
     public registerCommand(String name, String pass, String email, int type) {
         this.name = name;
@@ -777,9 +775,9 @@ class deleteGroupCommand extends Command {
 //}
 
 class createTestCommand extends Command {
-    private String name;
-    private int author;
-    private int price;
+    private final String name;
+    private final int author;
+    private final int price;
 
     public createTestCommand(String name, int author, int price) {
         this.name = name;
@@ -793,18 +791,18 @@ class createTestCommand extends Command {
             getConnection();
             //check if test name already exists
             Statement statement = connection.createStatement();
-            String sql = "select * from TEST where name='" + name + "'";
-            ResultSet resultSet = statement.executeQuery(sql);
-            //////check if there is a match
-            boolean returnValue = resultSet.next();
-            if (returnValue) {
-                statement.close();
-                connection.close();
-                return TESTNAMEALREADYUSED;
-            }
+//            String sql = "select * from TEST where name='" + name + "'";
+//            ResultSet resultSet = statement.executeQuery(sql);
+            //check if there is a match
+//            boolean returnValue = resultSet.next();
+//            if (returnValue) {
+//                statement.close();
+//                connection.close();
+//                return TESTNAMEALREADYUSED;
+//            }
             java.sql.Date sqlDate = new java.sql.Date(new java.util.Date().getTime());//get date
             String questions = "";// set questionsID to 0 refers no test
-            sql = "insert into TEST (name,author,date,price,questions) VALUE (?,?,?,?,?)";
+            String sql = "insert into TEST (name,author,date,price,questions) VALUE (?,?,?,?,?)";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, name);
             preparedStatement.setInt(2, author);
@@ -825,9 +823,9 @@ class createTestCommand extends Command {
 }
 
 class addQuestationCommand extends Command {
-    private String name;
-    private String question;
-    private String answer;
+    private final String name;
+    private final String question;
+    private final String answer;
 
     public addQuestationCommand(String name, String question, String answer) {
         this.name = name;
@@ -841,7 +839,7 @@ class addQuestationCommand extends Command {
             getConnection();
             //check if test name already exists
             Statement statement = connection.createStatement();
-            String sql = "select * from QUESTION where name='" + name + "'";
+            String sql;
 //            ResultSet resultSet = statement.executeQuery(sql);
 //            //////check if there is a match
 //            boolean returnValue = resultSet.next();
@@ -927,7 +925,7 @@ class deleteMemberCommand extends Command {
 }
 
 class createAnnouncementCommand extends Command {
-    private String announcement;
+    private final String announcement;
 
     public createAnnouncementCommand(String announcement) {
         this.announcement = announcement;
@@ -951,8 +949,8 @@ class createAnnouncementCommand extends Command {
 }
 
 class addQuestionToTestCommand extends Command {
-    private int questionID;
-    private int testID;
+    private final int questionID;
+    private final int testID;
 
     public addQuestionToTestCommand(int questionID, int testID) {
         this.questionID = questionID;
@@ -999,9 +997,9 @@ class addQuestionToTestCommand extends Command {
 
 
 class submitCommand extends Command {
-    private String answer;
-    private int questionID;
-    private int studentID;
+    private final String answer;
+    private final int questionID;
+    private final int studentID;
 
     public submitCommand(int studentID, String answer, int questionID) {
         this.answer = answer;
@@ -1015,12 +1013,11 @@ class submitCommand extends Command {
             getConnection();
             //check if test name already exists
             Statement statement = connection.createStatement();
-            int mark = FAILED;
             String sql = "insert into QUESTIONANSWER (questionID,answer,mark,studentID) VALUE (?,?,?,?)";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setInt(1, questionID);
             preparedStatement.setString(2, answer);
-            preparedStatement.setInt(3, mark);
+            preparedStatement.setInt(3, FAILED);
             preparedStatement.setInt(4, studentID);
             preparedStatement.executeUpdate();
             statement.close();
@@ -1040,8 +1037,8 @@ class submitCommand extends Command {
 
 //int GroupID,int type-> String group name/teacher/student ids/announcement/test ids
 class getGroupInfo extends Command {
-    private int groupID;
-    private int infoCol;
+    private final int groupID;
+    private final int infoCol;
 
 
     public getGroupInfo(int id, int type) {
@@ -1153,8 +1150,8 @@ class gradeQuestion extends Command {
 
 //int studentID, int testID --> int mark/FAILED
 class gradeTest extends Command{
-    private int studentID;
-    private int testID;
+    private final int studentID;
+    private final int testID;
     public gradeTest(int studentID, int testID) {
         this.studentID = studentID;
         this.testID = testID;}
@@ -1200,7 +1197,7 @@ class gradeTest extends Command{
             resultSet.next();
             String alltests = resultSet.getString(8);//in the form of "1,2,3,4"
             ////add groupID to the string
-            if (alltests.indexOf(testID + "") != -1) {
+            if (alltests.contains(testID + "")) {
                 statement.close();
                 connection.close();
                 return GROUPALREADYJOINED;
@@ -1232,7 +1229,7 @@ class gradeTest extends Command{
 
 //int studentID, int groupID --> int student average
 class getStudentAve extends Command {
-    private int studentID;
+    private final int studentID;
 
     public getStudentAve(int studentID) {
         this.studentID = studentID;}
@@ -1270,5 +1267,3 @@ class getStudentAve extends Command {
 //
 //}
 //getWords
-
-
