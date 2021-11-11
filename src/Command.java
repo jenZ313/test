@@ -98,7 +98,7 @@ public class Command {
             if (!hasMatch) {
                 statement.close();
                 connection.close();
-                return FAILED;
+                return 4;
             }
             String allGroups = resultSet.getString(col);//in the form of "21,20,23,4"
             ////remove groupID from the string
@@ -107,30 +107,31 @@ public class Command {
             if (index == -1) {
                 statement.close();
                 connection.close();
-                return FAILED;
+                return 5;
             }
             int IDLength = (groupID + "").length();
             String newGroups;
-            if (allGroups.length() == IDLength) {//allGroups.length() <= IDLength + 1
-                newGroups = "";
+            if (allGroups.length() <= index + IDLength + 1) {
+                newGroups = allGroups.substring(0, index);
             } else {
                 newGroups = allGroups.substring(0, index) + allGroups.substring(index + IDLength + 1);
             }
+//            System.out.println(newGroups);
             ////rewrite the new string to the database
             PreparedStatement preparedStatement = connection.prepareStatement(updateSql);
             preparedStatement.setString(1, newGroups);
             preparedStatement.setInt(2, userID);
             preparedStatement.executeUpdate();
-            statement.close();
-            connection.close();
+//            statement.close();
+//            connection.close();
             return SUCCESS;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
-            return FAILED;
+            return 6;
         }
     }
 
-    public int removeUserfromGroup(int userID, int groupID, Connection connection, Statement statement) {
+    public int removeUserFromGroup(int userID, int groupID, Connection connection, Statement statement) {
         String table = GROUPTABLENAME;
         int col = 4;
         String updateSql = "update STUDYGROUP set students = ? where id = ?";
@@ -166,8 +167,8 @@ public class Command {
             preparedStatement.setString(1, newusers);
             preparedStatement.setInt(2, groupID);
             preparedStatement.executeUpdate();
-            statement.close();
-            connection.close();
+//            statement.close();
+//            connection.close();
             return SUCCESS;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -244,7 +245,7 @@ public class Command {
             message.setSubject("Password Changed");
 
             // 设置消息体
-            message.setText("Your password is now: " + pass + ".");
+            message.setText("Your password is now: " + pass+".");
 
             // 发送消息
             Transport.send(message);
@@ -396,11 +397,12 @@ class registerCommand extends Command {
             java.sql.Date sqlDate = new java.sql.Date(new java.util.Date().getTime());//get date
             String groupID = "";//set groupID to []
             String testID = "";// set testID to 0 refers no test
+            String answerID = "";
             ////register as a student:id(auto-generated)|name|pass|date|email|words|groupID|level
             if (type == STUDENT) {
                 String words = "";//set words to []
                 int level = 1;//set level to 1
-                sql = "insert into STUDENT (name,pass,date,email,words,groupID,testID,level) VALUE (?,?,?,?,?,?,?,?)";
+                sql = "insert into STUDENT (name,pass,date,email,words,groupID,testID,answerID,level) VALUE (?,?,?,?,?,?,?,?,?)";
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);
                 preparedStatement.setString(1, name);
                 preparedStatement.setString(2, pass);
@@ -409,7 +411,8 @@ class registerCommand extends Command {
                 preparedStatement.setString(5, words);
                 preparedStatement.setString(6, groupID);
                 preparedStatement.setString(7, testID);
-                preparedStatement.setInt(8, level);
+                preparedStatement.setString(8, answerID);
+                preparedStatement.setInt(9, level);
                 preparedStatement.executeUpdate();
                 statement.close();
                 connection.close();
@@ -605,13 +608,15 @@ class createGroupCommand extends Command {
             //create
             String students = "";
             String posts = "";
+            String testID = "";
             ////register a group:id(auto-generated)|name|creator|students|posts
-            sql = "insert into STUDYGROUP (name,creator,students,posts) VALUE (?,?,?,?)";
+            sql = "insert into STUDYGROUP (name,creator,students,posts,testID) VALUE (?,?,?,?,?)";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, groupName);
             preparedStatement.setInt(2, teacherID);
             preparedStatement.setString(3, students);
             preparedStatement.setString(4, posts);
+            preparedStatement.setString(5, testID);
             preparedStatement.executeUpdate();
             //return SUCCESS;
             //get group id
@@ -663,10 +668,8 @@ class deleteGroupCommand extends Command {
             Statement statement = connection.createStatement();
             //remove group from teacher
             int result = removeGroupFromUser(teacherID, groupID, TEACHER, connection, statement);
-            if (result != SUCCESS) {
-                statement.close();
-                connection.close();
-                return FAILED;
+            if (result != SUCCESS) { return result;
+//                return FAILED;
             }
             //remove group from students
             String sql = "select * from " + GROUPTABLENAME + " where id='" + groupID + "'";
@@ -675,11 +678,12 @@ class deleteGroupCommand extends Command {
             if (!hasMatch) {
                 statement.close();
                 connection.close();
-                return FAILED;
+                return 2;
+//                return FAILED;
             }
-            String allStudents = resultSet.getString(STUDENTIDCOLINGROUP);//in the form of "21,20,23,4"
+            String allStudents = resultSet.getString(STUDENTIDCOLINGROUP);//in the form of "21,20,23,4 "
 
-            String[] students = allStudents.split(",");
+            String[] students = allStudents.trim().split(",");
             for (String student : students) {
                 removeGroupFromUser(Integer.parseInt(student), groupID, STUDENT, connection, statement);
             }
@@ -834,14 +838,14 @@ class addQuestationCommand extends Command {
             //check if test name already exists
             Statement statement = connection.createStatement();
             String sql = "select * from QUESTION where name='" + name + "'";
-            ResultSet resultSet = statement.executeQuery(sql);
-            //////check if there is a match
-            boolean returnValue = resultSet.next();
-            if (returnValue) {
-                statement.close();
-                connection.close();
-                return QUESTIONNAMEALREADYUSED;
-            }
+//            ResultSet resultSet = statement.executeQuery(sql);
+//            //////check if there is a match
+//            boolean returnValue = resultSet.next();
+//            if (returnValue) {
+//                statement.close();
+//                connection.close();
+//                return QUESTIONNAMEALREADYUSED;
+//            }
             sql = "insert into QUESTION (name,question,answer) VALUE (?,?,?)";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, name);
@@ -876,6 +880,7 @@ class addQuestationCommand extends Command {
 //    }
 //}
 //
+//int teacherID, int studentID, int groupID ->Success/failed
 class deleteMemberCommand extends Command {
     int teacherID;
     int studentID;
@@ -902,10 +907,10 @@ class deleteMemberCommand extends Command {
                 return FAILED;
             }
             removeGroupFromUser(studentID, groupID, STUDENT, connection, statement);
-            getConnection();
-            Statement statement1 = connection.createStatement();
+//            getConnection();
+//            Statement statement1 = connection.createStatement();
 
-            removeUserfromGroup(studentID, groupID, connection, statement1);
+            removeUserFromGroup(studentID, groupID, connection, statement);
 
             return SUCCESS;
         } catch (SQLException e) {
@@ -916,30 +921,111 @@ class deleteMemberCommand extends Command {
     }
 
 }
-
 class createAnnouncementCommand extends Command {
     private String announcement;
 
     public createAnnouncementCommand(String announcement) {
         this.announcement = announcement;
     }
-
     @Override
     public Object execute() {
-        try {
+        try{
             getConnection();
             String query = "update STUDYGROUP set posts = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, announcement);
             preparedStatement.executeUpdate();
             connection.close();
+            return SUCCESS;}
+        catch (SQLException e) {
+            e.printStackTrace();
+            return FAILED;}
+    }
+}
+
+class addQuestionToTestCommand extends Command {
+    private int questionID;
+    private int testID;
+    public addQuestionToTestCommand(int questionID, int testID) {
+        this.questionID = questionID;
+        this.testID = testID;
+    }
+    @Override
+    public Object execute(){
+        try {
+            getConnection();
+            Statement statement = connection.createStatement();
+
+            //remove group from students
+            String sql = "select * from " + "TEST"+ " where id='" + testID + "'";
+            ResultSet resultSet = statement.executeQuery(sql);
+            boolean hasMatch = resultSet.next();
+            if (!hasMatch) {
+                statement.close();
+                connection.close();
+                return FAILED;
+            }
+            String allTests = resultSet.getString(6);
+            if (allTests.length() == 0) {
+                allTests = "" + questionID;
+            }else{
+                allTests = allTests + "," + questionID;}
+            //delete the group from the group table
+            sql = "update TEST set questions = ? where id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, allTests);
+            preparedStatement.setInt(2, testID);
+            preparedStatement.executeUpdate();
+            statement.close();
+            connection.close();
             return SUCCESS;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return FAILED;
+        }
+
+    }
+}
+
+
+
+class submitCommand extends Command {
+    private String answer;
+    private int questionID;
+    private int studentID;
+    public submitCommand(int studentID, String answer, int questionID) {
+        this.answer = answer;
+        this.questionID = questionID;
+        this.studentID = studentID;
+    }
+    @Override
+    public Object execute() {
+        try {
+            getConnection();
+            //check if test name already exists
+            Statement statement = connection.createStatement();
+            int mark = FAILED;
+            String sql = "insert into QUESTIONANSWER (questionID,answer,mark,studentID) VALUE (?,?,?,?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, questionID);
+            preparedStatement.setString(2, answer);
+            preparedStatement.setInt(3, mark);
+            preparedStatement.setInt(4, studentID);
+            preparedStatement.executeUpdate();
+            statement.close();
+            connection.close();
+            Command c = new gradeQuestion();
+            c.execute();
+            return SUCCESS;
+
+
         } catch (SQLException e) {
             e.printStackTrace();
             return FAILED;
         }
     }
 }
+
 
 //int GroupID,int type-> String group name/teacher/student ids/announcement/test ids
 class getGroupInfo extends Command {
@@ -990,12 +1076,9 @@ class getGroupInfo extends Command {
 
 //int studentID, int question answer ID --> mark/FAILED
 class gradeQuestion extends Command {
-    private int studentID;
-    private int questionAnswerID;
 
-    public gradeQuestion(int studentID, int questionAnswerID) {
-        this.studentID = studentID;
-        this.questionAnswerID = questionAnswerID;
+    public gradeQuestion() {
+
     }
 
     @Override
@@ -1006,7 +1089,7 @@ class gradeQuestion extends Command {
             Statement statement = connection.createStatement();
 
             //get student answer
-            String sql = "select * from " + QUESTIONANSWERTABLENAME + " where id='" + questionAnswerID + "'";
+            String sql = "select * from " + QUESTIONANSWERTABLENAME + " where mark='" + FAILED + "'";
             ResultSet resultSet = statement.executeQuery(sql);
             boolean hasMatch = resultSet.next();
             if (!hasMatch) {
@@ -1014,10 +1097,9 @@ class gradeQuestion extends Command {
                 connection.close();
                 return FAILED;
             }
-
+            int id = resultSet.getInt(1);
             String studentAnswer = resultSet.getString(ANSWERCOLINQUESTIONANSWER);
             String questionID = resultSet.getString(QUESTIONIDCOLINQUESTIONANSWER);
-
             //get correct answer
             sql = "select * from " + QUESTIONTABLENAME + " where id='" + questionID + "'";
             resultSet = statement.executeQuery(sql);
@@ -1038,10 +1120,10 @@ class gradeQuestion extends Command {
             }
 
             //write the mark into database
-            sql = "update QUESTIONANSWERTABLENAME set mark = ? where id = ?";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            String sql1 = "update QUESTIONANSWER set mark = ? where id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql1);
             preparedStatement.setInt(1, studentMark);
-            preparedStatement.setInt(2, questionAnswerID);
+            preparedStatement.setInt(2, id);
             preparedStatement.executeUpdate();
 
 
