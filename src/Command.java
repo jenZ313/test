@@ -11,7 +11,7 @@ public class Command {
     public final int FAILED = -1;
     public final int USERNAMEALREADYUSED = -2;
     public final int GROUPALREADYJOINED = -3;
-//    public final int NOTREGISTERED = -4;
+    //    public final int NOTREGISTERED = -4;
 //    public final int TESTNAMEALREADYUSED = -5;
 //    public final int QUESTIONNAMEALREADYUSED = -6;
     public final int TEACHER = 11;
@@ -48,7 +48,7 @@ public class Command {
 
     public final int ANSWERCOLINQUESTION = 4;
     public final int ANSWERCOLINQUESTIONANSWER = 3;
-//    public final int MARKCOLINQUESTIONANSWER = 3;
+    //    public final int MARKCOLINQUESTIONANSWER = 3;
     public final int QUESTIONIDCOLINQUESTIONANSWER = 2;
 
 
@@ -774,6 +774,7 @@ class deleteGroupCommand extends Command {
 //    }
 //}
 
+//String test name, String author, int price -> SUCCESS/FAILED
 class createTestCommand extends Command {
     private final String name;
     private final int author;
@@ -822,6 +823,7 @@ class createTestCommand extends Command {
     }
 }
 
+//string question name, string question, string answer -> SUCCESS/FAILED
 class addQuestationCommand extends Command {
     private final String name;
     private final String question;
@@ -924,6 +926,7 @@ class deleteMemberCommand extends Command {
 
 }
 
+//String content -> SUCCESS/FAILED
 class createAnnouncementCommand extends Command {
     private final String announcement;
 
@@ -948,6 +951,7 @@ class createAnnouncementCommand extends Command {
     }
 }
 
+//int question id, int test id -> FAILED/SUCCESS
 class addQuestionToTestCommand extends Command {
     private final int questionID;
     private final int testID;
@@ -995,7 +999,7 @@ class addQuestionToTestCommand extends Command {
     }
 }
 
-
+//int student id, string answer, int question id -> SUCCESS/FAILED
 class submitCommand extends Command {
     private final String answer;
     private final int questionID;
@@ -1149,12 +1153,14 @@ class gradeQuestion extends Command {
 }
 
 //int studentID, int testID --> int mark/FAILED
-class gradeTest extends Command{
+class gradeTest extends Command {
     private final int studentID;
     private final int testID;
+
     public gradeTest(int studentID, int testID) {
         this.studentID = studentID;
-        this.testID = testID;}
+        this.testID = testID;
+    }
 
     @Override
     public Object execute() {
@@ -1197,7 +1203,7 @@ class gradeTest extends Command{
             resultSet.next();
             String alltests = resultSet.getString(8);//in the form of "1,2,3,4"
             ////add groupID to the string
-            if (alltests.contains(testID + "")) {
+            if (isInString(alltests, testID, ",")) {
                 statement.close();
                 connection.close();
                 return GROUPALREADYJOINED;
@@ -1232,7 +1238,9 @@ class getStudentAve extends Command {
     private final int studentID;
 
     public getStudentAve(int studentID) {
-        this.studentID = studentID;}
+        this.studentID = studentID;
+    }
+
     @Override
     public Object execute() {
         try {
@@ -1250,11 +1258,11 @@ class getStudentAve extends Command {
             }
             int time = 1;
             int total = resultSet.getInt(4);
-            while(resultSet.next()){
-                total+=resultSet.getInt(4);
+            while (resultSet.next()) {
+                total += resultSet.getInt(4);
                 time += 1;
             }
-            return total*1.0/time;
+            return total * 1.0 / time;
 
         } catch (SQLException e) {
             e.printStackTrace();
