@@ -10,25 +10,48 @@ import javax.activation.*;
 
 public class Command {
     public final int SUCCESS = 0;
-    public final int FAILED = 1;
-    public final int USERNAMEALREADYUSED = 2;
-    public final int GROUPALREADYJOINED = 3;
-    public final int NOTREGISTERED = 4;
-    public final int TESTNAMEALREADYUSED = 5;
-    public final int QUESTIONNAMEALREADYUSED = 6;
+    public final int FAILED = -1;
+    public final int USERNAMEALREADYUSED = -2;
+    public final int GROUPALREADYJOINED = -3;
+    public final int NOTREGISTERED = -4;
+    public final int TESTNAMEALREADYUSED = -5;
+    public final int QUESTIONNAMEALREADYUSED = -6;
     public final int TEACHER = 11;
     public final int STUDENT = 12;
+
+
+    public final int GETGROUPNAME = 21;
+    public final int GETGROUPTEACHER = 22;
+    public final int GETGROUPSTUDENT = 23;
+    public final int GETGROUPANNOUNCEMENT = 24;
+    public final int GETGROUPTEST = 25;
+
+    public final int GETSTUDENTFINSHEDTEST = 31;
+    public final int GETSTUDENTTODOTEST = 32;
 
     public final String STUDENTTABLENAME = "STUDENT";
     public final String TEACHERTABLENAME = "TEACHER";
     public final String GROUPTABLENAME = "STUDYGROUP";
+    public final String QUESTIONTABLENAME = "QUESTION";
+    public final String QUESTIONANSWERTABLENAME = "QUESTIONANSWER";
 
 
+    public final int NAMECOLINGROUP = 2;
+    public final int TEACHERIDCOLINGROUP = 3;
     public final int STUDENTIDCOLINGROUP = 4;
+    public final int ANNOUNCEMENTCOLINGROUP = 5;
+    public final int TESTIDCOLINGROUP = 6;
+
     public final int GROUPIDCOLINTEACHER = 6;
     public final int GROUPIDCOLINSTUDENT = 7;
     public final int EMAILINSTUDENT = 5;
     public final int EMAILINTEACHER = 5;
+
+    public final int ANSWERCOLINQUESTION = 4;
+    public final int ANSWERCOLINQUESTIONANSWER = 3;
+    public final int MARKCOLINQUESTIONANSWER = 3;
+    public final int QUESTIONIDCOLINQUESTIONANSWER = 2;
+
 
     public String driver = "com.mysql.cj.jdbc.Driver";//驱动程序名
     public String url = "jdbc:MySQL://sql5.freemysqlhosting.net:3306/sql5449780";//url指向要访问的数据库study
@@ -88,7 +111,7 @@ public class Command {
             }
             int IDLength = (groupID + "").length();
             String newGroups;
-            if (allGroups.length() == IDLength) {
+            if (allGroups.length() == IDLength) {//allGroups.length() <= IDLength + 1
                 newGroups = "";
             } else {
                 newGroups = allGroups.substring(0, index) + allGroups.substring(index + IDLength + 1);
@@ -221,7 +244,7 @@ public class Command {
             message.setSubject("Password Changed");
 
             // 设置消息体
-            message.setText("Your password is now: " + pass+".");
+            message.setText("Your password is now: " + pass + ".");
 
             // 发送消息
             Transport.send(message);
@@ -232,7 +255,7 @@ public class Command {
 
     }
 
-    public int execute() {
+    public Object execute() {
         return -1;
     }
 }
@@ -248,7 +271,7 @@ class loginCommand extends Command {
     }
 
     @Override
-    public int execute() {
+    public Object execute() {
         try {
             getConnection();
             //check if the user is a student
@@ -296,7 +319,7 @@ class checkIdentity extends Command {
     }
 
     @Override
-    public int execute() {
+    public Object execute() {
         try {
             getConnection();
             //check if id appears in student table
@@ -343,7 +366,7 @@ class registerCommand extends Command {
     }
 
     @Override
-    public int execute() {
+    public Object execute() {
         try {
             getConnection();
             //check if username already exists
@@ -427,7 +450,7 @@ class quitGroupCommand extends Command {
     }
 
     @Override
-    public int execute() {
+    public Object execute() {
         try {
             getConnection();
             Statement statement = connection.createStatement();
@@ -493,7 +516,7 @@ class joinGroupCommand extends Command {
     }
 
     @Override
-    public int execute() {
+    public Object execute() {
         try {
             getConnection();
             //add group to student
@@ -564,7 +587,7 @@ class createGroupCommand extends Command {
     }
 
     @Override
-    public int execute() {
+    public Object execute() {
         try {
             getConnection();
             //check if group already exists
@@ -634,13 +657,15 @@ class deleteGroupCommand extends Command {
     }
 
     @Override
-    public int execute() {
+    public Object execute() {
         try {
             getConnection();
             Statement statement = connection.createStatement();
             //remove group from teacher
             int result = removeGroupFromUser(teacherID, groupID, TEACHER, connection, statement);
             if (result != SUCCESS) {
+                statement.close();
+                connection.close();
                 return FAILED;
             }
             //remove group from students
@@ -683,7 +708,7 @@ class forgetPassCommand extends Command {
     }
 
     @Override
-    public int execute() {
+    public Object execute() {
         try {
             int type;
             String email = null;
@@ -755,7 +780,7 @@ class createTestCommand extends Command {
     }
 
     @Override
-    public int execute() {
+    public Object execute() {
         try {
             getConnection();
             //check if test name already exists
@@ -803,7 +828,7 @@ class addQuestationCommand extends Command {
     }
 
     @Override
-    public int execute() {
+    public Object execute() {
         try {
             getConnection();
             //check if test name already exists
@@ -863,7 +888,7 @@ class deleteMemberCommand extends Command {
     }
 
     @Override
-    public int execute() {
+    public Object execute() {
         try {
             getConnection();
             Statement statement = connection.createStatement();
@@ -891,28 +916,161 @@ class deleteMemberCommand extends Command {
     }
 
 }
+
 class createAnnouncementCommand extends Command {
     private String announcement;
 
     public createAnnouncementCommand(String announcement) {
         this.announcement = announcement;
     }
+
     @Override
-    public int execute() {
-       try{
-           getConnection();
-           String query = "update STUDYGROUP set posts = ?";
-           PreparedStatement preparedStatement = connection.prepareStatement(query);
-           preparedStatement.setString(1, announcement);
-           preparedStatement.executeUpdate();
-           connection.close();
-           return SUCCESS;}
-        catch (SQLException e) {
+    public Object execute() {
+        try {
+            getConnection();
+            String query = "update STUDYGROUP set posts = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, announcement);
+            preparedStatement.executeUpdate();
+            connection.close();
+            return SUCCESS;
+        } catch (SQLException e) {
             e.printStackTrace();
-            return FAILED;}
+            return FAILED;
+        }
     }
 }
 
+//int GroupID,int type-> String group name/teacher/student ids/announcement/test ids
+class getGroupInfo extends Command {
+    private int groupID;
+    private int infoCol;
+
+
+    public getGroupInfo(int id, int type) {
+        this.groupID = id;
+        if (type == GETGROUPNAME) {
+            this.infoCol = NAMECOLINGROUP;
+        } else if (type == GETGROUPTEACHER) {
+            this.infoCol = TEACHERIDCOLINGROUP;
+        } else if (type == GETGROUPSTUDENT) {
+            this.infoCol = STUDENTIDCOLINGROUP;
+        } else if (type == GETGROUPANNOUNCEMENT) {
+            this.infoCol = ANNOUNCEMENTCOLINGROUP;
+        } else { //if (type == GETGROUPTEST) {
+            this.infoCol = TESTIDCOLINGROUP;
+        }
+
+    }
+
+    @Override
+    public Object execute() {
+        try {
+            getConnection();
+            Statement statement = connection.createStatement();
+            String sql = "select * from " + GROUPTABLENAME + " where id='" + groupID + "'";
+            ResultSet resultSet = statement.executeQuery(sql);
+            boolean hasMatch = resultSet.next();
+            if (!hasMatch) {
+                statement.close();
+                connection.close();
+                return FAILED;
+            }
+            String result = resultSet.getString(infoCol);
+            statement.close();
+            connection.close();
+            return result;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return FAILED;
+        }
+
+    }
+}
+
+//int studentID, int question answer ID --> mark/FAILED
+class gradeQuestion extends Command {
+    private int studentID;
+    private int questionAnswerID;
+
+    public gradeQuestion(int studentID, int questionAnswerID) {
+        this.studentID = studentID;
+        this.questionAnswerID = questionAnswerID;
+    }
+
+    @Override
+    public Object execute() {
+
+        try {
+            getConnection();
+            Statement statement = connection.createStatement();
+
+            //get student answer
+            String sql = "select * from " + QUESTIONANSWERTABLENAME + " where id='" + questionAnswerID + "'";
+            ResultSet resultSet = statement.executeQuery(sql);
+            boolean hasMatch = resultSet.next();
+            if (!hasMatch) {
+                statement.close();
+                connection.close();
+                return FAILED;
+            }
+
+            String studentAnswer = resultSet.getString(ANSWERCOLINQUESTIONANSWER);
+            String questionID = resultSet.getString(QUESTIONIDCOLINQUESTIONANSWER);
+
+            //get correct answer
+            sql = "select * from " + QUESTIONTABLENAME + " where id='" + questionID + "'";
+            resultSet = statement.executeQuery(sql);
+            hasMatch = resultSet.next();
+            if (!hasMatch) {
+                statement.close();
+                connection.close();
+                return FAILED;
+            }
+            String correctAnswer = resultSet.getString(ANSWERCOLINQUESTION);
+
+            //give student a mark of 0/1
+            int studentMark;
+            if (correctAnswer.equals(studentAnswer)) {
+                studentMark = 1;
+            } else {
+                studentMark = 0;
+            }
+
+            //write the mark into database
+            sql = "update QUESTIONANSWERTABLENAME set mark = ? where id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, studentMark);
+            preparedStatement.setInt(2, questionAnswerID);
+            preparedStatement.executeUpdate();
+
+
+            statement.close();
+            connection.close();
+
+            return studentMark;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return FAILED;
+        }
+
+    }
+}
+
+//int studentID, int testID --> int mark/FAILED
+class gradeTest extends Command{
+
+}
+
+//int studentID, int groupID --> int student average
+class getStudentAve extends Command {
+}
+
+//int studentID, int groupID, int type --> String toodo/finished test ids
+class getStudentTest extends Command {
+
+}
 
 //class submitCommand extends Command {
 //
@@ -921,4 +1079,8 @@ class createAnnouncementCommand extends Command {
 //
 //    }
 //}
+
+//addQuestiontoTest
+//getWords
+
 
