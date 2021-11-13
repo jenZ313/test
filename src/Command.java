@@ -1,10 +1,5 @@
 import java.sql.*;
-//import java.util.Properties;
-//import java.util.Random;
-//import java.util.*;
-//import javax.mail.*;
-//import javax.mail.internet.*;
-//import javax.activation.*;
+
 
 public class Command {
     public final int SUCCESS = 0;

@@ -1,6 +1,6 @@
 import java.sql.*;
 
-public class Main {
+public class Ini {
     public static Connection getConnection() {
         Connection conn = null;
         String driver = "com.mysql.cj.jdbc.Driver";//驱动程序名
@@ -205,9 +205,9 @@ public class Main {
 //        c.execute();
 //        Command c1 = new forgetPassCommand("j1");
 //        c1.execute();
-//        Command d = new registerCommand("jacky","123456","jacky.shanyi@mail.utoronto.ca",11);
-//        int ID = d.execute();
-//        System.out.println(ID);
+        Command d = new registerCommand("234","123","123",11);
+        int ID = (int)d.execute();
+        System.out.println(ID);
 //
 //        Command a = new joinGroupCommand(6, 7);
 //        a.execute();
