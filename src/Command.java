@@ -29,45 +29,10 @@ public abstract class Command {
     public final int FAILED = -1;
     public final int USERNAMEALREADYUSED = -2;
     public final int GROUPALREADYJOINED = -3;
-    //    public final int NOTREGISTERED = -4;
-//    public final int TESTNAMEALREADYUSED = -5;
-//    public final int QUESTIONNAMEALREADYUSED = -6;
     public final int TEACHER = 11;
     public final int STUDENT = 12;
 
-//
-//    public final int GETGROUPNAME = 21;
-//    public final int GETGROUPTEACHER = 22;
-//    public final int GETGROUPSTUDENT = 23;
-//    public final int GETGROUPANNOUNCEMENT = 24;
-//    public final int GETGROUPTEST = 25;
-
-//    public final int GETSTUDENTFINSHEDTEST = 31;
-//    public final int GETSTUDENTTODOTEST = 32;
-
     public final String STUDENTTABLENAME = "STUDENT";
-    //    public final String TEACHERTABLENAME = "TEACHER";
-//    public final String GROUPTABLENAME = "STUDYGROUP";
-//    public final String QUESTIONTABLENAME = "QUESTION";
-//    public final String QUESTIONANSWERTABLENAME = "QUESTIONANSWER";
-//    public final String TESTTABLENAME = "TEST";
-
-
-//    public final int NAMECOLINGROUP = 2;
-//    public final int TEACHERIDCOLINGROUP = 3;
-//    public final int STUDENTIDCOLINGROUP = 4;
-//    public final int ANNOUNCEMENTCOLINGROUP = 5;
-//    public final int TESTIDCOLINGROUP = 6;
-
-//    public final int GROUPIDCOLINTEACHER = 6;
-//    public final int GROUPIDCOLINSTUDENT = 7;
-//    public final int EMAILINSTUDENT = 5;
-//    public final int EMAILINTEACHER = 5;
-//
-//    public final int ANSWERCOLINQUESTION = 4;
-//    public final int ANSWERCOLINQUESTIONANSWER = 3;
-    //    public final int MARKCOLINQUESTIONANSWER = 3;
-//    public final int QUESTIONIDCOLINQUESTIONANSWER = 2;
 
 
     public Connection connection = null;
@@ -393,13 +358,12 @@ class deleteGroupCommand extends Command {
 class createTestCommand extends Command {
     private final String name;
     private final int author;
-    private final int price;
+    private final int price = 90;
     private final java.util.Date date;
 
-    public createTestCommand(String name, int author, int price, java.util.Date date) {
+    public createTestCommand(String name, int author, java.util.Date date) {
         this.name = name;
         this.author = author;
-        this.price = price;
         this.date = date;
     }
 
@@ -429,25 +393,22 @@ class createQuestationCommand extends Command {
     }
 }
 
-//int teacherID, int studentID, int groupID ->Success/failed
+//int studentID, int groupID ->Success/failed
 class deleteMemberCommand extends Command {
-    int teacherID;
     int studentID;
     int groupID;
 
-    public deleteMemberCommand(int teacherID, int studentID, int groupID) {
+    public deleteMemberCommand(int studentID, int groupID) {
         this.studentID = studentID;
         this.groupID = groupID;
-        this.teacherID = teacherID;
     }
 
     @Override
     public Object execute() {
 
         int result1 = removeGroupFromUser(studentID, groupID, STUDENT);
-        int result2 = removeGroupFromUser(teacherID, groupID, TEACHER);
         int result3 = removeStudentFromGroup(studentID, groupID);
-        if (result1 == SUCCESS && result2 == SUCCESS && result3 == SUCCESS) {
+        if (result1 == SUCCESS && result3 == SUCCESS) {
             return SUCCESS;
         }
         return FAILED;
@@ -502,75 +463,42 @@ class addQuestionToTestCommand extends Command {
 
 //int student id, string answer, int question id -> SUCCESS/FAILED
 class submitAnswerCommand extends Command {
-    private final String answer;
-    private final int questionID;
+    private final String[] answer;
+    private final int testID;
     private final int studentID;
 
-    public submitAnswerCommand(int studentID, String answer, int questionID) {
+    public submitAnswerCommand(int studentID, String[] answer, int testID) {
         this.answer = answer;
-        this.questionID = questionID;
+        this.testID = testID;
         this.studentID = studentID;
     }
 
     @Override
     public Object execute() {
-        AnswerWriter answerWriter = new WriteNewAnswer(studentID, answer, questionID);
-        int result = (int) answerWriter.set();
-        if (result == FAILED) {
+        TestReader testReader = new ReadQuestions(testID);
+        String question = (String) testReader.read();
+        if (question.equals(FAILED + "")) {
             return FAILED;
         }
-        Command c = new autoGrade();
-        return c.execute();
+        try {
+            String[] questions = question.trim().split(",");
+            for (int i = 0; i < answer.length; i++) {
+                AnswerWriter answerWriter = new WriteNewAnswer(studentID, answer[i], Integer.parseInt(questions[i]));
+                int result = (int) answerWriter.set();
+                if (result == FAILED) {
+                    return FAILED;
+                }
+                Command c = new autoGrade();
+                c.execute();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return FAILED;
+        }
+
+
     }
 }
-
-//
-////int GroupID,int type-> String group name/teacher/student ids/announcement/test ids
-//class getGroupInfo extends Command {
-//    private final int groupID;
-//    private final int infoCol;
-//
-//
-//    public getGroupInfo(int id, int type) {
-//        this.groupID = id;
-//        if (type == GETGROUPNAME) {
-//            this.infoCol = NAMECOLINGROUP;
-//        } else if (type == GETGROUPTEACHER) {
-//            this.infoCol = TEACHERIDCOLINGROUP;
-//        } else if (type == GETGROUPSTUDENT) {
-//            this.infoCol = STUDENTIDCOLINGROUP;
-//        } else if (type == GETGROUPANNOUNCEMENT) {
-//            this.infoCol = ANNOUNCEMENTCOLINGROUP;
-//        } else { //if (type == GETGROUPTEST) {
-//            this.infoCol = TESTIDCOLINGROUP;
-//        }
-//
-//    }
-//
-//    @Override
-//    public Object execute() {
-//        try {
-//            getConnection();
-//            Statement statement = connection.createStatement();
-//            String sql = "select * from " + GROUPTABLENAME + " where id='" + groupID + "'";
-//            ResultSet resultSet = statement.executeQuery(sql);
-//            boolean hasMatch = resultSet.next();
-//            if (!hasMatch) {
-//                statement.close();
-//                connection.close();
-//                return FAILED;
-//            }
-//            String result = resultSet.getString(infoCol);
-//            statement.close();
-//            connection.close();
-//            return result;
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//            return FAILED;
-//        }
-//
-//    }
-//}
 
 //void --> mark/FAILED
 class autoGrade extends Command {
