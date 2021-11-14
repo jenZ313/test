@@ -5,7 +5,9 @@ import Read.Teacher.TeacherReader;
 import Write.Group.GroupWriter;
 import Write.Group.WriteNewGroup;
 import Write.Student.StudentWriter;
+import Write.Student.WriteNewStudent;
 import Write.Teacher.TeacherWriter;
+import Write.Teacher.WriteNewTeacher;
 
 
 import java.sql.*;
@@ -269,76 +271,18 @@ class registerCommand extends Command {
 
     @Override
     public Object execute() {
-        try {
-            getConnection();
-            //check if username already exists
-            ////check if name is used by a student
-            Statement statement = connection.createStatement();
-            String sql = "select * from STUDENT where name='" + name + "'";
-            ResultSet resultSet = statement.executeQuery(sql);
-            //////check if there is a match
-            boolean returnValue = resultSet.next();
-            if (returnValue) {
-                statement.close();
-                connection.close();
-                return USERNAMEALREADYUSED;
-            }
-            ////check if name is used by a teacher
-            sql = "select * from TEACHER where name='" + name + "'";
-            resultSet = statement.executeQuery(sql);
-            //////check if there is a match
-            returnValue = resultSet.next();
-            if (returnValue) {
-                statement.close();
-                connection.close();
-                return USERNAMEALREADYUSED;
-            }
-
-            //register
-            java.sql.Date sqlDate = new java.sql.Date(new java.util.Date().getTime());//get date
-            String groupID = "";//set groupID to []
-            String testID = "";// set testID to 0 refers no test
-            String answerID = "";
-            ////register as a student:id(auto-generated)|name|pass|date|email|words|groupID|level
-            if (type == STUDENT) {
-                String words = "";//set words to []
-                int level = 1;//set level to 1
-                sql = "insert into STUDENT (name,pass,date,email,words,groupID,testID,answerID,level) VALUE (?,?,?,?,?,?,?,?,?)";
-                PreparedStatement preparedStatement = connection.prepareStatement(sql);
-                preparedStatement.setString(1, name);
-                preparedStatement.setString(2, pass);
-                preparedStatement.setDate(3, sqlDate);
-                preparedStatement.setString(4, email);
-                preparedStatement.setString(5, words);
-                preparedStatement.setString(6, groupID);
-                preparedStatement.setString(7, testID);
-                preparedStatement.setString(8, answerID);
-                preparedStatement.setInt(9, level);
-                preparedStatement.executeUpdate();
-                statement.close();
-                connection.close();
-            }
-            ////register as a teacher:id|name|pass|date|email|groupID
-            else {
-                sql = "insert into TEACHER (name,pass,date,email,groupID,testID) VALUE (?,?,?,?,?,?)";
-                PreparedStatement preparedStatement = connection.prepareStatement(sql);
-                preparedStatement.setString(1, name);
-                preparedStatement.setString(2, pass);
-                preparedStatement.setDate(3, sqlDate);
-                preparedStatement.setString(4, email);
-                preparedStatement.setString(5, groupID);
-                preparedStatement.setString(6, testID);
-                preparedStatement.executeUpdate();
-                statement.close();
-                connection.close();
-            }
-            return SUCCESS;
-
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return FAILED;
+        //register as a student
+        if (type == STUDENT) {
+            StudentWriter studentWriter = new WriteNewStudent(name, pass, email, type);
+            return studentWriter.set();
         }
+        //register as a teacher
+        else {
+            TeacherWriter teacherWriter = new WriteNewTeacher(name, pass, email, type);
+            return teacherWriter.set();
+        }
+
+
     }
 }
 

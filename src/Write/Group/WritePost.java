@@ -1,10 +1,10 @@
 package Write.Group;
 
-public class WriteGroupPost extends GroupWriter {
+public class WritePost extends GroupWriter {
     private int groupID;
     private String post;
 
-    public WriteGroupPost(int groupID, String post) {
+    public WritePost(int groupID, String post) {
         this.groupID = groupID;
         this.post = post;
     }
