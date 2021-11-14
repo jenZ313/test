@@ -5,11 +5,14 @@ import Read.Answer.ReadAnswer;
 import Read.Answer.ReadID;
 import Read.Answer.ReadQuestionID;
 import Read.Question.QuestionReader;
+import Read.Question.ReadMark;
 
 import java.sql.*;
 
 public class AutoGrade extends AnswerWriter {
+    public AutoGrade(){}
     @Override
+
     public Object set() {
         try {
             Connection connection = getConnection();
@@ -23,12 +26,12 @@ public class AutoGrade extends AnswerWriter {
 
             String studentAnswer = (String) new ReadAnswer(answerID).read();
             int questionID = (int) new ReadQuestionID(answerID).read();
-            int mark = (int) new Read.Answer.ReadMark(answerID).read();
+
 
             QuestionReader questionReader = new Read.Question.ReadAnswer(questionID);
             String correctAnswer = (String) questionReader.read();
-
-            //give student a mark of 0/1
+            QuestionReader q = new Read.Question.ReadMark(questionID);
+            int mark = (int) q.read();
             int studentMark;
             if (correctAnswer.equals(studentAnswer)) {
                 studentMark = mark;
