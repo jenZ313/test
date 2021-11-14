@@ -1,3 +1,13 @@
+import Read.Group.GroupReader;
+import Read.Group.ReadStudents;
+import Read.Student.StudentReader;
+import Read.Teacher.TeacherReader;
+import Write.Group.GroupWriter;
+import Write.Group.WriteNewGroup;
+import Write.Student.StudentWriter;
+import Write.Teacher.TeacherWriter;
+
+
 import java.sql.*;
 
 
@@ -69,89 +79,57 @@ public class Command {
         }
     }
 
-    public int removeGroupFromUser(int userID, int groupID, int userType, Connection connection, Statement statement) {
-        String table;
-        int col;
-        String updateSql;
-        if (userType == STUDENT) {
-            table = STUDENTTABLENAME;
-            col = GROUPIDCOLINSTUDENT;
-            updateSql = "update STUDENT set groupID = ? where id = ?";
+    public int removeGroupFromUser(int userID, int groupID, int userType) {
 
-        } else {
-            table = TEACHERTABLENAME;
-            col = GROUPIDCOLINTEACHER;
-            updateSql = "update TEACHER set groupID = ? where id = ?";
-        }
-        try {
-            ////get all the groups creates by the user
-            String sql = "select * from " + table + " where id='" + userID + "'";
-            ResultSet resultSet = statement.executeQuery(sql);
-            ////get all ids of groups created by the user
-            boolean hasMatch = resultSet.next();
-            if (!hasMatch) {
-                statement.close();
-                connection.close();
+        if (userType == STUDENT) {
+            //get all group ids
+            StudentReader reader = new Read.Student.ReadGroups(userID);
+            String allGroups = (String) reader.read();
+            if (allGroups.equals(FAILED + "")) {
                 return FAILED;
             }
-            String allGroups = resultSet.getString(col);//in the form of "21,20,23,4"
-            ////remove groupID from the string
+            //check if group id is in the string
             if (!isInString(allGroups, groupID, ",")) {
-                statement.close();
-                connection.close();
+                return FAILED;
+            }
+            //remove id from string
+            String newGroups = removeIDFromString(allGroups, groupID, ",");
+            //reset the new string
+            StudentWriter writer = new Write.Student.WriteGroups(userID, newGroups);
+            return (int) writer.set();
+
+        } else {
+            TeacherReader reader = new Read.Teacher.ReadGroups(userID);
+            String allGroups = (String) reader.read();
+            if (allGroups.equals(FAILED + "")) {
+                return FAILED;
+            }
+            if (!isInString(allGroups, groupID, ",")) {
                 return FAILED;
             }
             String newGroups = removeIDFromString(allGroups, groupID, ",");
-            ////rewrite the new string to the database
-            PreparedStatement preparedStatement = connection.prepareStatement(updateSql);
-            preparedStatement.setString(1, newGroups);
-            preparedStatement.setInt(2, userID);
-            preparedStatement.executeUpdate();
-//            statement.close();
-//            connection.close();
-            return SUCCESS;
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-            return FAILED;
+            TeacherWriter writer = new Write.Teacher.WriteGroups(userID, newGroups);
+            return (int) writer.set();
         }
     }
 
-    public int removeUserFromGroup(int userID, int groupID, Connection connection, Statement statement) {
-        String table = "STUDYGROUP";
-        int col = 4;
-        String updateSql = "update STUDYGROUP set students = ? where id = ?";
-        try {
-            ////get all the users in this group
-            String sql = "select * from " + table + " where id='" + groupID + "'";
-            ResultSet resultSet = statement.executeQuery(sql);
-            ////get all ids of users in this group
-            boolean hasMatch = resultSet.next();
-            if (!hasMatch) {
-                statement.close();
-                connection.close();
-                return FAILED;
-            }
-            String allusers = resultSet.getString(col);//in the form of "21,20,23,4"
-            ////remove groupID from the string
-            //////if group not found, return failed
-            if (!isInString(allusers, userID, ",")) {
-                statement.close();
-                connection.close();
-                return FAILED;
-            }
-            String newusers = removeIDFromString(allusers, userID, ",");
-            ////rewrite the new string to the database
-            PreparedStatement preparedStatement = connection.prepareStatement(updateSql);
-            preparedStatement.setString(1, newusers);
-            preparedStatement.setInt(2, groupID);
-            preparedStatement.executeUpdate();
-//            statement.close();
-//            connection.close();
-            return SUCCESS;
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+    public int removeStudentFromGroup(int userID, int groupID) {
+
+        //get all students
+        GroupReader groupReader = new ReadStudents(groupID);
+        String allStudents = (String) groupReader.read();
+        if (allStudents.equals(FAILED + "")) {
             return FAILED;
         }
+        //check if student is in the group
+        if (!isInString(allStudents, groupID, ",")) {
+            return FAILED;
+        }
+        //remove student from the group
+        String newStudents = removeIDFromString(allStudents, userID, ",");
+        //reset the new string
+        GroupWriter writer = new Write.Group.WriteStudents(newStudents, groupID);
+        return (int) writer.set();
     }
 
     public boolean isInString(String string, int id, String split) {
@@ -178,86 +156,6 @@ public class Command {
         result = result.substring(0, result.length() - 1);
         return result;
     }
-
-//    public int setRandomPass(int userType, String username, int pass, Statement statement, Connection connection) {
-//        try {
-//            String table;
-//            int col;
-//            String updateSql;
-//            if (userType == STUDENT) {
-//                table = STUDENTTABLENAME;
-//                col = GROUPIDCOLINSTUDENT;
-//                updateSql = "update STUDENT set pass = ? where name = ?";
-//
-//            } else {
-//                table = TEACHERTABLENAME;
-//                col = GROUPIDCOLINTEACHER;
-//                updateSql = "update TEACHER set pass = ? where name = ?";
-//            }
-//
-//
-//            PreparedStatement preparedStatement = connection.prepareStatement(updateSql);
-//            preparedStatement.setString(1, pass + "");
-//            preparedStatement.setString(2, username);
-//            preparedStatement.executeUpdate();
-//            statement.close();
-//            connection.close();
-//            return SUCCESS;
-//
-//        } catch (SQLException throwables) {
-//            throwables.printStackTrace();
-//            return FAILED;
-//        }
-//
-//
-//    }
-//
-//    public void sendMail(String email, String pass) {
-//
-//        // 收件人电子邮箱
-//        String to = email;
-//
-//        // 发件人电子邮箱
-//        String from = "zhanni2020@gmail.com";
-//
-//        // 指定发送邮件的主机为 localhost
-//        String host = "localhost";
-//
-//        // 获取系统属性
-//        Properties properties = System.getProperties();
-//
-//
-//        // 设置邮件服务器
-//        properties.setProperty("mail.smtp.host", host);
-//
-//        // 获取默认session对象
-//        Session session = Session.getDefaultInstance(properties);
-//
-//        try {
-//            // 创建默认的 MimeMessage 对象
-//            MimeMessage message = new MimeMessage(session);
-//
-//            // Set From: 头部头字段
-//            message.setFrom(new InternetAddress(from));
-//
-//            // Set To: 头部头字段
-//            message.addRecipient(Message.RecipientType.TO,
-//                    new InternetAddress(to));
-//
-//            // Set Subject: 头部头字段
-//            message.setSubject("Password Changed");
-//
-//            // 设置消息体
-//            message.setText("Your password is now: " + pass + ".");
-//
-//            // 发送消息
-//            Transport.send(message);
-//        } catch (MessagingException mex) {
-//            mex.printStackTrace();
-//        }
-//
-//
-//    }
 
     public Object execute() {
         return -1;
@@ -461,7 +359,7 @@ class quitGroupCommand extends Command {
             getConnection();
             Statement statement = connection.createStatement();
             //remove group from student
-            int result = removeGroupFromUser(studentID, groupID, STUDENT, connection, statement);
+            int result = removeGroupFromUser(studentID, groupID, STUDENT);
             if (result != SUCCESS) {
                 return FAILED;
             }
@@ -587,63 +485,8 @@ class createGroupCommand extends Command {
 
     @Override
     public Object execute() {
-        try {
-            getConnection();
-            //check if group already exists
-            Statement statement = connection.createStatement();
-            String sql = "select * from STUDYGROUP where name='" + groupName + "'";
-            ResultSet resultSet = statement.executeQuery(sql);
-            //////check if there is a match
-            boolean hasMatch = resultSet.next();
-            if (hasMatch) {
-                statement.close();
-                connection.close();
-                return USERNAMEALREADYUSED;
-            }
-
-            //create
-            String students = "";
-            String posts = "";
-            String testID = "";
-            ////register a group:id(auto-generated)|name|creator|students|posts
-            sql = "insert into STUDYGROUP (name,creator,students,posts,testID) VALUE (?,?,?,?,?)";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, groupName);
-            preparedStatement.setInt(2, teacherID);
-            preparedStatement.setString(3, students);
-            preparedStatement.setString(4, posts);
-            preparedStatement.setString(5, testID);
-            preparedStatement.executeUpdate();
-            //return SUCCESS;
-            //get group id
-            sql = "select * from " + GROUPTABLENAME + " where name='" + groupName + "'";
-            resultSet = statement.executeQuery(sql);
-            resultSet.next();
-            int groupID = resultSet.getInt(1);
-            //add group to teacher
-            sql = "select * from " + TEACHERTABLENAME + " where id='" + teacherID + "'";
-            resultSet = statement.executeQuery(sql);
-            resultSet.next();
-            String allGroups = resultSet.getString(6);
-            if (allGroups.length() == 0) {
-                allGroups = groupID + "";
-            } else {
-                allGroups = groupID + "," + allGroups;
-            }
-            sql = "update TEACHER set groupID = ? where id = ?";
-            preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, allGroups);
-            preparedStatement.setInt(2, teacherID);
-            preparedStatement.executeUpdate();
-
-            statement.close();
-            connection.close();
-            return groupID;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return FAILED;
-        }
+        GroupWriter groupWriter = new WriteNewGroup(teacherID, groupName);
+        return groupWriter.set();
     }
 }
 
@@ -663,7 +506,7 @@ class deleteGroupCommand extends Command {
             getConnection();
             Statement statement = connection.createStatement();
             //remove group from teacher
-            int result = removeGroupFromUser(teacherID, groupID, TEACHER, connection, statement);
+            int result = removeGroupFromUser(teacherID, groupID, TEACHER);
             if (result != SUCCESS) {
                 statement.close();
                 connection.close();
@@ -682,7 +525,7 @@ class deleteGroupCommand extends Command {
 
             String[] students = allStudents.trim().split(",");
             for (String student : students) {
-                removeGroupFromUser(Integer.parseInt(student), groupID, STUDENT, connection, statement);
+                removeGroupFromUser(Integer.parseInt(student), groupID, STUDENT);
             }
             //delete the group from the group table
             sql = "delete from STUDYGROUP where id = ?";
@@ -905,11 +748,11 @@ class deleteMemberCommand extends Command {
                 connection.close();
                 return FAILED;
             }
-            removeGroupFromUser(studentID, groupID, STUDENT, connection, statement);
+            removeGroupFromUser(studentID, groupID, STUDENT);
 //            getConnection();
 //            Statement statement1 = connection.createStatement();
 
-            removeUserFromGroup(studentID, groupID, connection, statement);
+            removeStudentFromGroup(studentID, groupID);
 
             return SUCCESS;
         } catch (SQLException e) {
