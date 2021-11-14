@@ -11,10 +11,10 @@ import java.sql.SQLException;
 
 public class WriteNewTeacher extends TeacherWriter {
 
-    private String name;
-    private String pass;
-    private String email;
-    private int type;
+    private final String name;
+    private final String pass;
+    private final String email;
+    private final int type;
 
     public WriteNewTeacher(String name, String pass, String email, int type) {
         this.name = name;

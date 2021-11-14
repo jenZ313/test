@@ -3,21 +3,21 @@ package Read.Teacher;
 import Read.Reader;
 
 public abstract class TeacherReader extends Reader {
-    public final String TABLE = "TEACHER";
-    public final String ID = "id";
-    public final String NAME = "name";
-    public final String PASS = "pass";
-    public final String EMAIL = "email";
-    public final String GROUPS = "groupID";
-    public final String TESTS = "testID";
+    protected final String TABLE = "TEACHER";
+    protected final String ID = "id";
+    protected final String NAME = "name";
+    protected final String PASS = "pass";
+    protected final String EMAIL = "email";
+    protected final String GROUPS = "groupID";
+    protected final String TESTS = "testID";
 
 
-    public final int IDCol = 1;
-    public final int NAMECol = 2;
-    public final int PASSCol = 3;
-    public final int EMAILCol = 5;
-    public final int GROUPSCol = 6;
-    public final int TESTSCol = 7;
+    protected final int IDCol = 1;
+    protected final int NAMECol = 2;
+    protected final int PASSCol = 3;
+    protected final int EMAILCol = 5;
+    protected final int GROUPSCol = 6;
+    protected final int TESTSCol = 7;
 
 }
 

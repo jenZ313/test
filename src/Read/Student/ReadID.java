@@ -2,7 +2,7 @@ package Read.Student;
 
 
 public class ReadID extends StudentReader {
-    private String name;
+    private final String name;
 
     public ReadID(String name) {
         this.name = name;
@@ -10,6 +10,7 @@ public class ReadID extends StudentReader {
 
     @Override
     public Object read() {
-        return readInfo(name, TABLE, IDCol, INT);
+        String sql = "select * from " + TABLE + " where name='" + name + "'";
+        return readInfo(sql, IDCol, INT);
     }
 }

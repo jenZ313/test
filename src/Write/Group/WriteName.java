@@ -3,8 +3,8 @@ package Write.Group;
 import Read.Group.GroupReader;
 
 public class WriteName extends GroupWriter {
-    private int groupID;
-    private String name;
+    private final int groupID;
+    private final String name;
 
     public WriteName(int groupID, String name) {
         this.groupID = groupID;
