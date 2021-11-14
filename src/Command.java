@@ -1,11 +1,13 @@
 import Read.Group.GroupReader;
 import Read.Group.ReadStudents;
-import Read.Student.ReadNameAndPass;
 import Read.Student.StudentReader;
-import Read.Teacher.ReadName;
 import Read.Teacher.TeacherReader;
 import Read.Test.ReadQuestions;
 import Read.Test.TestReader;
+import Write.Answer.AnswerWriter;
+import Write.Answer.AutoGrade;
+import Write.Answer.WriteMark;
+import Write.Answer.WriteNewAnswer;
 import Write.Group.*;
 import Write.Question.QuestionWriter;
 import Write.Question.WriteNewQuestion;
@@ -22,7 +24,7 @@ import Write.Test.WriteQuestions;
 import java.sql.*;
 
 
-public class Command {
+public abstract class Command {
     public final int SUCCESS = 0;
     public final int FAILED = -1;
     public final int USERNAMEALREADYUSED = -2;
@@ -43,11 +45,11 @@ public class Command {
 //    public final int GETSTUDENTFINSHEDTEST = 31;
 //    public final int GETSTUDENTTODOTEST = 32;
 
-//    public final String STUDENTTABLENAME = "STUDENT";
-//    public final String TEACHERTABLENAME = "TEACHER";
+    public final String STUDENTTABLENAME = "STUDENT";
+    //    public final String TEACHERTABLENAME = "TEACHER";
 //    public final String GROUPTABLENAME = "STUDYGROUP";
-    public final String QUESTIONTABLENAME = "QUESTION";
-    public final String QUESTIONANSWERTABLENAME = "QUESTIONANSWER";
+//    public final String QUESTIONTABLENAME = "QUESTION";
+//    public final String QUESTIONANSWERTABLENAME = "QUESTIONANSWER";
 //    public final String TESTTABLENAME = "TEST";
 
 
@@ -57,34 +59,39 @@ public class Command {
 //    public final int ANNOUNCEMENTCOLINGROUP = 5;
 //    public final int TESTIDCOLINGROUP = 6;
 
-    public final int GROUPIDCOLINTEACHER = 6;
-    public final int GROUPIDCOLINSTUDENT = 7;
+//    public final int GROUPIDCOLINTEACHER = 6;
+//    public final int GROUPIDCOLINSTUDENT = 7;
 //    public final int EMAILINSTUDENT = 5;
 //    public final int EMAILINTEACHER = 5;
-
-    public final int ANSWERCOLINQUESTION = 4;
-    public final int ANSWERCOLINQUESTIONANSWER = 3;
+//
+//    public final int ANSWERCOLINQUESTION = 4;
+//    public final int ANSWERCOLINQUESTIONANSWER = 3;
     //    public final int MARKCOLINQUESTIONANSWER = 3;
-    public final int QUESTIONIDCOLINQUESTIONANSWER = 2;
+//    public final int QUESTIONIDCOLINQUESTIONANSWER = 2;
 
 
     public Connection connection = null;
 
-//    public Command() {
-//        getConnection();
-//    }
-//
-//    public void getConnection() {
-//        try {
-//            // 加载驱动类
-//            Class.forName(driver);
-//            // 建立连接
-//            this.connection = DriverManager.getConnection(url,
-//                    user, password);
-//        } catch (SQLException | ClassNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    public String driver = "com.mysql.cj.jdbc.Driver";//驱动程序名
+    public String url = "jdbc:MySQL://sql5.freemysqlhosting.net:3306/sql5449780";//url指向要访问的数据库study
+    public String user = "sql5449780";//MySQL配置时的用户名
+    public String password = "HNzHR6WEhn";//MySQL配置时的密码
+
+    public Command() {
+        getConnection();
+    }
+
+    public void getConnection() {
+        try {
+            // 加载驱动类
+            Class.forName(driver);
+            // 建立连接
+            this.connection = DriverManager.getConnection(url,
+                    user, password);
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
     public int removeGroupFromUser(int userID, int groupID, int userType) {
 
@@ -155,18 +162,16 @@ public class Command {
         }
         String[] array = string.split(split);
         String result = "";
-        for (int i = 0; i < array.length; i++) {
-            if (!array[i].equals(id + "")) {
-                result = array[i] + ",";
+        for (String s : array) {
+            if (!s.equals(id + "")) {
+                result = s + ",";
             }
         }
         result = result.substring(0, result.length() - 1);
         return result;
     }
 
-    public Object execute() {
-        return -1;
-    }
+    public abstract Object execute();
 }
 
 //String name,String pass -> an id/FAILED
@@ -190,11 +195,7 @@ class loginCommand extends Command {
 
         TeacherReader teacherReader = new Read.Teacher.ReadNameAndPass(name, pass);
         id = (int) teacherReader.read();
-        if (id != FAILED) {
-            return id;
-        }
-
-        return FAILED;
+        return id;
 
     }
 }
@@ -410,12 +411,12 @@ class createTestCommand extends Command {
 }
 
 //string question name, string question, string answer -> SUCCESS/FAILED
-class addQuestationCommand extends Command {
+class createQuestationCommand extends Command {
     private final String name;
     private final String question;
     private final String answer;
 
-    public addQuestationCommand(String name, String question, String answer) {
+    public createQuestationCommand(String name, String question, String answer) {
         this.name = name;
         this.question = question;
         this.answer = answer;
@@ -500,12 +501,12 @@ class addQuestionToTestCommand extends Command {
 }
 
 //int student id, string answer, int question id -> SUCCESS/FAILED
-class submitCommand extends Command {
+class submitAnswerCommand extends Command {
     private final String answer;
     private final int questionID;
     private final int studentID;
 
-    public submitCommand(int studentID, String answer, int questionID) {
+    public submitAnswerCommand(int studentID, String answer, int questionID) {
         this.answer = answer;
         this.questionID = questionID;
         this.studentID = studentID;
@@ -513,28 +514,13 @@ class submitCommand extends Command {
 
     @Override
     public Object execute() {
-        try {
-            getConnection();
-            //check if test name already exists
-            Statement statement = connection.createStatement();
-            String sql = "insert into QUESTIONANSWER (questionID,answer,mark,studentID) VALUE (?,?,?,?)";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setInt(1, questionID);
-            preparedStatement.setString(2, answer);
-            preparedStatement.setInt(3, FAILED);
-            preparedStatement.setInt(4, studentID);
-            preparedStatement.executeUpdate();
-            statement.close();
-            connection.close();
-            Command c = new gradeQuestion();
-            c.execute();
-            return SUCCESS;
-
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+        AnswerWriter answerWriter = new WriteNewAnswer(studentID, answer, questionID);
+        int result = (int) answerWriter.set();
+        if (result == FAILED) {
             return FAILED;
         }
+        Command c = new autoGrade();
+        return c.execute();
     }
 }
 
@@ -586,69 +572,34 @@ class submitCommand extends Command {
 //    }
 //}
 
-//int studentID, int question answer ID --> mark/FAILED
-class gradeQuestion extends Command {
+//void --> mark/FAILED
+class autoGrade extends Command {
 
-    public gradeQuestion() {
-
+    public autoGrade() {
     }
 
     @Override
     public Object execute() {
+        AnswerWriter answerWriter = new AutoGrade();
+        return answerWriter.set();
 
-        try {
-            getConnection();
-            Statement statement = connection.createStatement();
+    }
+}
 
-            //get student answer
-            String sql = "select * from " + QUESTIONANSWERTABLENAME + " where mark='" + FAILED + "'";
-            ResultSet resultSet = statement.executeQuery(sql);
-            boolean hasMatch = resultSet.next();
-            if (!hasMatch) {
-                statement.close();
-                connection.close();
-                return FAILED;
-            }
-            int id = resultSet.getInt(1);
-            String studentAnswer = resultSet.getString(ANSWERCOLINQUESTIONANSWER);
-            String questionID = resultSet.getString(QUESTIONIDCOLINQUESTIONANSWER);
-            //get correct answer
-            sql = "select * from " + QUESTIONTABLENAME + " where id='" + questionID + "'";
-            resultSet = statement.executeQuery(sql);
-            hasMatch = resultSet.next();
-            if (!hasMatch) {
-                statement.close();
-                connection.close();
-                return FAILED;
-            }
-            String correctAnswer = resultSet.getString(ANSWERCOLINQUESTION);
+//int answer id, int mark --> SUCCESS/FAILED
+class gradeQuestion extends Command {
+    private final int answerID;
+    private final int mark;
 
-            //give student a mark of 0/1
-            int studentMark;
-            if (correctAnswer.equals(studentAnswer)) {
-                studentMark = 1;
-            } else {
-                studentMark = 0;
-            }
+    public gradeQuestion(int answerID, int mark) {
+        this.answerID = answerID;
+        this.mark = mark;
+    }
 
-            //write the mark into database
-            String sql1 = "update QUESTIONANSWER set mark = ? where id = ?";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql1);
-            preparedStatement.setInt(1, studentMark);
-            preparedStatement.setInt(2, id);
-            preparedStatement.executeUpdate();
-
-
-            statement.close();
-            connection.close();
-
-            return studentMark;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return FAILED;
-        }
-
+    @Override
+    public Object execute() {
+        AnswerWriter answerWriter = new WriteMark(answerID, mark);
+        return answerWriter.set();
     }
 }
 
@@ -722,7 +673,7 @@ class gradeTest extends Command {
 
             statement.close();
             connection.close();
-            Command c = new gradeQuestion();
+            Command c = new autoGrade();
             c.execute();
             return SUCCESS;
 
@@ -770,8 +721,3 @@ class getStudentAve extends Command {
         }
     }
 }
-//int studentID, int groupID, int type --> String toodo/finished test ids
-//class getStudentTest extends Command {
-//
-//}
-//getWords
