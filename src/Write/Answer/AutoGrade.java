@@ -23,6 +23,7 @@ public class AutoGrade extends AnswerWriter {
 
             String studentAnswer = (String) new ReadAnswer(answerID).read();
             int questionID = (int) new ReadQuestionID(answerID).read();
+            int mark = (int) new Read.Answer.ReadMark(answerID).read();
 
             QuestionReader questionReader = new Read.Question.ReadAnswer(questionID);
             String correctAnswer = (String) questionReader.read();
@@ -30,7 +31,7 @@ public class AutoGrade extends AnswerWriter {
             //give student a mark of 0/1
             int studentMark;
             if (correctAnswer.equals(studentAnswer)) {
-                studentMark = 1;
+                studentMark = mark;
             } else {
                 studentMark = 0;
             }

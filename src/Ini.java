@@ -148,6 +148,7 @@ public class Ini {
                     " name VARCHAR(16), " +
                     " question VARCHAR(1000), " +
                     " answer VARCHAR(1000), " +
+                    " mark INT , " +
                     " PRIMARY KEY ( id )) CHARACTER SET = utf8";
             statement.executeUpdate(sql);
             System.out.println("Created question table in given database...");
