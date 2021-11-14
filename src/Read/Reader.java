@@ -1,6 +1,7 @@
 package Read;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public abstract class Reader implements Readable {
 
@@ -58,6 +59,36 @@ public abstract class Reader implements Readable {
                 return resultSet.getInt(col);
             } else {
                 return resultSet.getString(col);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return FAILED;
+        }
+
+    }
+
+    protected Object readAll(String sql, int col, int type) {
+        try {
+            Connection connection = getConnection();
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql);
+            if (!resultSet.next()) {
+                return FAILED;
+            }
+            if (type == INT) {
+                ArrayList<Integer> intList = new ArrayList<>();
+                intList.add(resultSet.getInt(col));
+                while (resultSet.next()) {
+                    intList.add(resultSet.getInt(col));
+                }
+                return intList;
+            } else {
+                ArrayList<String> stringList = new ArrayList<>();
+                stringList.add(resultSet.getString(col));
+                while (resultSet.next()) {
+                    stringList.add(resultSet.getString(col));
+                }
+                return stringList;
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
