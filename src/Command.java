@@ -461,7 +461,7 @@ class addQuestionToTestCommand extends Command {
     }
 }
 
-//int student id, string answer, int question id -> SUCCESS/FAILED
+//int student id, string[] answer, int test id -> SUCCESS/FAILED
 class submitAnswerCommand extends Command {
     private final String[] answer;
     private final int testID;
@@ -489,7 +489,9 @@ class submitAnswerCommand extends Command {
                     return FAILED;
                 }
                 Command c = new autoGrade();
-                c.execute();
+                if ((int) c.execute() == FAILED) {
+                    return FAILED;
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
