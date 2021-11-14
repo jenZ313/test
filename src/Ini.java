@@ -204,13 +204,17 @@ public class Ini {
 
 //        Command a = new Command();
 //        a.removeGroupFromUser(1,1,12);
-
-//        Command c = new registerCommand("j1","pass","jacky.jiang@mail.utoronto.ca",12);
+//
+//        Command c = new registerCommand("23434","234","qweqtrqret",12);
 //        c.execute();
 //        Command c1 = new forgetPassCommand("j1");
 //        c1.execute();
 //        Command d = new registerCommand("234","123","123",11);
-//        int ID = (int)d.execute();
+//        d.execute();
+//        Command d1 = new registerCommand("234","123","123",12);
+//        d1.execute();
+//        Command d3 = new registerCommand("234","123","123",11);
+//        d3.execute();
 //        System.out.println(ID);
 //
 //        Command a = new joinGroupCommand(6, 7);

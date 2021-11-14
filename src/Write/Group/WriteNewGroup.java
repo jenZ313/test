@@ -1,7 +1,8 @@
 package Write.Group;
 
 import Read.Group.GroupReader;
-import Read.Group.ReadGroupID;
+import Read.Group.ReadID;
+import Read.Reader;
 import Read.Teacher.ReadGroups;
 import Read.Teacher.TeacherReader;
 import Write.Teacher.TeacherWriter;
@@ -24,14 +25,13 @@ public class WriteNewGroup extends GroupWriter {
     public Object set() {
         try {
 
-
             GroupReader groupReader;
             TeacherReader teacherReader;
             TeacherWriter teacherWriter;
 
             //check if name already exists
-            groupReader = new ReadGroupID(groupName);
-            if (groupReader.hasDuplicateNames(TABLE, groupName)) {
+            groupReader = new ReadID(groupName);
+            if (Reader.hasDuplicateNames(TABLE, groupName)) {
                 return FAILED;
             }
 

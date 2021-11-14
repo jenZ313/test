@@ -1,9 +1,9 @@
 package Read.Group;
 
-public class ReadGroupID extends GroupReader {
+public class ReadID extends GroupReader {
     private String groupName;
 
-    public ReadGroupID(String groupName) {
+    public ReadID(String groupName) {
         this.groupName = groupName;
     }
 
