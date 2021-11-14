@@ -1,8 +1,8 @@
 package Write.Student;
 
 public class WriteGroups extends StudentWriter {
-    private int studentID;
-    private String groups;
+    private final int studentID;
+    private final String groups;
 
     public WriteGroups(int studentID, String groups) {
         this.groups = groups;

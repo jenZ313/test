@@ -1,7 +1,7 @@
 package Read.Group;
 
 public class ReadStudents extends GroupReader {
-    private int groupID;
+    private final int groupID;
 
     public ReadStudents(int groupID) {
         this.groupID = groupID;
@@ -9,6 +9,7 @@ public class ReadStudents extends GroupReader {
 
     @Override
     public Object read() {
-        return readInfo(groupID, TABLE, STUDENTSCol, STRING);
+        String sql = "select * from " + TABLE + " where id='" + groupID + "'";
+        return readInfo(sql, IDCol, INT);
     }
 }

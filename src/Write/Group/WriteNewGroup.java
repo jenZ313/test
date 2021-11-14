@@ -13,8 +13,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class WriteNewGroup extends GroupWriter {
-    int teacherID;
-    String groupName;
+    private final int teacherID;
+    private final String groupName;
 
     public WriteNewGroup(int teacherID, String groupName) {
         this.teacherID = teacherID;

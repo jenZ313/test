@@ -1,7 +1,7 @@
 package Read.Student;
 
 public class ReadGroups extends StudentReader {
-    private int studentID;
+    private final int studentID;
 
     public ReadGroups(int studentID) {
         this.studentID = studentID;
@@ -9,6 +9,7 @@ public class ReadGroups extends StudentReader {
 
     @Override
     public Object read() {
-        return readInfo(studentID, TABLE, GROUPSCol, STRING);
+        String sql = "select * from " + TABLE + " where id='" + studentID + "'";
+        return readInfo(sql, GROUPSCol, STRING);
     }
 }

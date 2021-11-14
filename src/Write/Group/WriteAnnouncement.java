@@ -1,10 +1,10 @@
 package Write.Group;
 
-public class WritePost extends GroupWriter {
-    private int groupID;
-    private String post;
+public class WriteAnnouncement extends GroupWriter {
+    private final int groupID;
+    private final String post;
 
-    public WritePost(int groupID, String post) {
+    public WriteAnnouncement(int groupID, String post) {
         this.groupID = groupID;
         this.post = post;
     }

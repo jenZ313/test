@@ -45,11 +45,11 @@ public abstract class Reader implements Readable {
 
     }
 
-    public Object readInfo(int ID, String table, int col, int type) {
+
+    protected Object readInfo(String sql, int col, int type) {
         try {
             Connection connection = getConnection();
             Statement statement = connection.createStatement();
-            String sql = "select * from " + table + " where id='" + ID + "'";
             ResultSet resultSet = statement.executeQuery(sql);
             if (!resultSet.next()) {
                 return FAILED;
@@ -65,26 +65,5 @@ public abstract class Reader implements Readable {
         }
 
     }
-
-    public Object readInfo(String name, String table, int col, int type) {
-        try {
-            Connection connection = getConnection();
-            Statement statement = connection.createStatement();
-            String sql = "select * from " + table + " where name='" + name + "'";
-            ResultSet resultSet = statement.executeQuery(sql);
-            if (!resultSet.next()) {
-                return FAILED;
-            }
-            if (type == INT) {
-                return resultSet.getInt(col);
-            } else {
-                return resultSet.getString(col);
-            }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-            return FAILED;
-        }
-    }
-
 }
 
