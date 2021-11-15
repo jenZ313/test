@@ -16,6 +16,7 @@ public abstract class QuestionWriter extends Writer {
     protected final int NAMECol = 2;
     protected final int QUESTIONCol = 3;
     protected final int ANSWERCol = 4;
+    protected final int MARKCol = 5;
 
     public Object setQuestionInfo(String colName, int teacherID, String info) {
         return updateInfo(teacherID, info, TABLE, colName);

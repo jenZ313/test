@@ -1,3 +1,10 @@
+import Read.Answer.AnswerReader;
+import Read.Answer.ReadAnswer;
+import Read.Answer.ReadID;
+import Read.Answer.ReadQuestionID;
+import Read.Question.QuestionReader;
+import Read.Question.ReadMark;
+
 import java.sql.*;
 
 public class Ini {
@@ -276,6 +283,27 @@ public class Ini {
 //        c.execute();
 //        Command c = new getStudentAve(1);
 //        System.out.println(c.execute());;
+//        Command c = new createQuestationCommand("q1", "apple", "苹果", 5);
+//        c.execute();
+//        Command c = new submitAnswerCommand(1, "苹果", 1);
+//        c.execute();
+//        Command d = new submitAnswerCommand(1, "pingguo", 1);
+//        d.execute();
+//        String studentAnswer = (String) new ReadAnswer(15).read();
+//        System.out.println(studentAnswer);
+//        int questionID = (int) new ReadQuestionID(15).read();
+//        System.out.println(questionID);
+//        QuestionReader questionReader = new Read.Question.ReadAnswer(1);
+//        String correctAnswer = (String) questionReader.read();
+//        System.out.println(correctAnswer);
+        Command c = new autoGrade();
+        c.execute();
+//        AnswerReader answerReader = new ReadID(-1);
+//        int answerID = (int) answerReader.read();
+//        int questionID = (int) new ReadQuestionID(answerID).read();
+//        QuestionReader q = new Read.Question.ReadMark(1);
+//        int mark = (int) q.read();
+//        System.out.println(mark);
     }
 
 }

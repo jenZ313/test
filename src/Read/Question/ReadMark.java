@@ -1,6 +1,6 @@
-package Read.Answer;
+package Read.Question;
 
-public class ReadMark extends AnswerReader {
+public class ReadMark extends QuestionReader {
     private final int ID;
 
     public ReadMark(int ID) {
@@ -10,6 +10,6 @@ public class ReadMark extends AnswerReader {
     @Override
     public Object read() {
         String sql = "select * from " + TABLE + " where id='" + ID + "'";
-        return readInfo(sql, 4, INT);
+        return readInfo(sql, 5, INT);
     }
 }
