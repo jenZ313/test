@@ -296,14 +296,16 @@ public class Ini {
 //        QuestionReader questionReader = new Read.Question.ReadAnswer(1);
 //        String correctAnswer = (String) questionReader.read();
 //        System.out.println(correctAnswer);
-        Command c = new autoGrade();
-        c.execute();
+//        Command c = new autoGrade();
+//        c.execute();
 //        AnswerReader answerReader = new ReadID(-1);
 //        int answerID = (int) answerReader.read();
 //        int questionID = (int) new ReadQuestionID(answerID).read();
 //        QuestionReader q = new Read.Question.ReadMark(1);
 //        int mark = (int) q.read();
 //        System.out.println(mark);
+        Command c = new getStudentAve(1);
+        System.out.println(c.execute());
     }
 
 }
