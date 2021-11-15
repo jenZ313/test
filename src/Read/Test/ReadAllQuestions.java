@@ -17,13 +17,14 @@ public class ReadAllQuestions extends TestReader {
         if (allQuestionID.equals(FAILED + "")) {
             return FAILED;
         }
-
         String[] questionList = allQuestionID.split(",");
-        String[] questions = new String[questionList.length];
+
+        String[] result = new String[questionList.length];
         for (int i = 0; i < questionList.length; i++) {
             QuestionReader questionReader = new ReadQuestion(Integer.parseInt(questionList[i]));
-            questions[i] = (String) questionReader.read();
+            result[i] = (String) questionReader.read();
         }
-        return questionList;
+        return result;
+
     }
 }
