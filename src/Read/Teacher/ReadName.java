@@ -11,6 +11,6 @@ public class ReadName extends TeacherReader {
     @Override
     public Object read() {
         String sql = "select * from " + TABLE + " where id='" + ID + "'";
-        return readInfo(sql, IDCol, STRING);
+        return readInfo(sql, 2, STRING);
     }
 }

@@ -24,6 +24,8 @@ import Write.Test.WriteQuestions;
 
 
 import java.sql.*;
+import java.util.HashMap;
+import java.util.Set;
 
 
 public abstract class Command {
@@ -268,7 +270,16 @@ class joinGroupCommand extends Command {
         //add group to student
         ////get all the groups joined by the student
         StudentReader studentReader = new Read.Student.ReadGroups(studentID);
-        String allGroups = (String) studentReader.read();
+        Set set = ((HashMap) studentReader.read()).keySet();
+        String allGroups = "";
+        for (Object string : set) {
+            allGroups = allGroups + "," + string;
+        }
+        if (allGroups.length() >0) {
+            allGroups = allGroups.substring(1);}
+        else{
+            allGroups = "";
+        }
         ////add groupID to the string
         if (isInString(allGroups, groupID, ",")) {
             return GROUPALREADYJOINED;
@@ -494,15 +505,15 @@ class submitAnswerCommand extends Command {
                 if (result == FAILED) {
                     return FAILED;
                 }
-            Command c = new autoGrade();
-            c.execute();
+                Command c = new autoGrade();
+                c.execute();
             }
         } catch (Exception e) {
             e.printStackTrace();
             return FAILED;
         }
 
-    return SUCCESS;
+        return SUCCESS;
     }
 }
 
@@ -574,7 +585,7 @@ class gradeTest extends Command {
 //            getConnection();
 //            Statement statement = connection.createStatement();
 
-            //get questions
+//get questions
 //            String sql = "select * from " + "TEST" + " where id='" + testID + "'";
 //            ResultSet resultSet = statement.executeQuery(sql);
 //            boolean hasMatch = resultSet.next();

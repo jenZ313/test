@@ -13,7 +13,7 @@ public class ReadID extends QuestionReader {
 
     @Override
     public Object read() {
-        String sql = "select * from " + TABLE + " where name='" + name + "' and question=''" + question + "' and answer=''" + answer + "'";
+        String sql = "select * from " + TABLE + " where name='" + name + "' and question='" + question + "' and answer='" + answer + "'";
         return readInfo(sql, IDCol, INT);
     }
 }

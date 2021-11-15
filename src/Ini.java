@@ -266,8 +266,8 @@ public class Ini {
 //          c.execute();
 //        Command a1 = new registerCommand("jen12", "passads", "qdqq", 12);
 //        a1.execute();
-//        Command a2 = new joinGroupCommand(5, 1);
-//        System.out.println(a2.execute());
+        Command a2 = new joinGroupCommand(7, 6);
+        System.out.println(a2.execute());
 //        Command a3 = new quitGroupCommand(id,1);
 //        System.out.println(a3.execute());
 //        Command c = new submitCommand(1,"a", 1);
@@ -311,6 +311,9 @@ public class Ini {
 //        String[] a = {"苹果", "diyi", "吃饭"};
 //        Command c = new submitAnswerCommand(1, a, 1, 1);
 //        c.execute();
+//        iniTAnswerTable();
+        Command c = new checkIdentity(10);
+        System.out.println(c.execute());
     }
 
 }

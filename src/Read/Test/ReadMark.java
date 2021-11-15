@@ -10,6 +10,6 @@ public class ReadMark extends TestReader {
     @Override
     public Object read() {
         String sql = "select * from " + "TESTANSWER" + " where studentID='" + studentID + "'";
-        return readInfo(sql, IDCol, INT);
+        return readInfo(sql, 4, INT);
     }
 }

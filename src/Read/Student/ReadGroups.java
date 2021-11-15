@@ -1,5 +1,7 @@
 package Read.Student;
 
+import Read.Group.ReadName;
+
 import java.util.HashMap;
 
 public class ReadGroups extends StudentReader {
@@ -13,17 +15,21 @@ public class ReadGroups extends StudentReader {
     public Object read() {
         HashMap<Integer, String> result = new HashMap<>();
         String sql = "select * from " + TABLE + " where id='" + studentID + "'";
-        String groups = (String) readInfo(sql, GROUPSCol, STRING);
-        String IDs = (String) readInfo(sql, IDCol, STRING);
-        if (groups == FAILED + "") {
+        String groupsID = (String) readInfo(sql, GROUPSCol, STRING);
+        if ((groupsID.equals(FAILED + ""))) {
             return FAILED;
         }
 
         try {
-            String[] groupsList = groups.trim().split(",");
-            String[] IDList = IDs.trim().split(",");
-            for (int i = 0; i < groupsList.length; i++) {
-                result.put(Integer.parseInt(IDList[i]), groupsList[i]);
+            if (groupsID.equals("")) {
+                result = new HashMap<>();
+            }else{
+                String[] IDList = groupsID.trim().split(",");
+                for (String s : IDList) {
+                    int id = Integer.parseInt(s.trim());
+                    String name = (String) new ReadName(id).read().toString();
+
+                    result.put(id, name);}
             }
             return result;
 

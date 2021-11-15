@@ -23,15 +23,16 @@ public class AutoGrade extends AnswerWriter {
             if (answerID == FAILED) {
                 return FAILED;
             }
-
-            String studentAnswer = (String) new ReadAnswer(answerID).read();
-            int questionID = (int) new ReadQuestionID(answerID).read();
-
+            AnswerReader answerReader1 = new ReadAnswer(answerID);
+            String studentAnswer = (String) answerReader1.read();
+            AnswerReader answerReader2 = new ReadQuestionID(answerID);
+            int questionID = (int) answerReader2.read();
 
             QuestionReader questionReader = new Read.Question.ReadAnswer(questionID);
-            String correctAnswer = (String) questionReader.read();
-            QuestionReader q = new Read.Question.ReadMark(questionID);
-            int mark = (int) q.read();
+            String correctAnswer;
+            correctAnswer = (String) questionReader.read();
+            QuestionReader questionReader1 = new Read.Question.ReadMark(questionID);
+            int mark = (int) questionReader1.read();
             int studentMark;
             if (correctAnswer.equals(studentAnswer)) {
                 studentMark = mark;

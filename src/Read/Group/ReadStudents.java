@@ -10,6 +10,6 @@ public class ReadStudents extends GroupReader {
     @Override
     public Object read() {
         String sql = "select * from " + TABLE + " where id='" + groupID + "'";
-        return readInfo(sql, IDCol, INT);
+        return readInfo(sql, STUDENTSCol, STRING);
     }
 }
