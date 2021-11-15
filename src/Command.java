@@ -1,9 +1,10 @@
+import Read.Answer.AnswerReader;
+import Read.Answer.ReadMark;
 import Read.Group.GroupReader;
 import Read.Group.ReadStudents;
 import Read.Student.StudentReader;
 import Read.Teacher.TeacherReader;
 import Read.Test.*;
-import Read.Test.ReadMark;
 import Write.Answer.AnswerWriter;
 import Write.Answer.AutoGrade;
 import Write.Answer.WriteMark;
@@ -17,6 +18,7 @@ import Write.Student.WriteNewStudent;
 import Write.Teacher.TeacherWriter;
 import Write.Teacher.WriteNewTeacher;
 import Write.Test.TestWriter;
+import Write.Test.*;
 import Write.Test.WriteNewTest;
 import Write.Test.WriteQuestions;
 
@@ -534,17 +536,37 @@ class gradeQuestion extends Command {
 }
 
 //int studentID, int testID --> int mark/FAILED
-//class gradeTest extends Command {
-//    private final int studentID;
-//    private final int testID;
-//
-//    public gradeTest(int studentID, int testID) {
-//        this.studentID = studentID;
-//        this.testID = testID;
-//    }
-//
-//    @Override
-//    public Object execute() {
+class gradeTest extends Command {
+    private final int studentID;
+    private final int testID;
+
+    public gradeTest(int studentID, int testID) {
+        this.studentID = studentID;
+        this.testID = testID;
+    }
+
+    @Override
+    public Object execute() {
+        TestReader testReader = new ReadQuestions(testID);
+        String question = (String) testReader.read();
+        try {
+            String[] questions = question.trim().split(",");
+            int sum = 0;
+            for (int i = 0; i < questions.length; i++) {
+                AnswerReader answerReader = new ReadMark(studentID, Integer.parseInt(questions[i]));
+                int mark = (int) answerReader.read();
+                sum += mark;
+            }
+            TestWriter testWriter = new Write.Test.WriteMark(testID, sum);
+            return testWriter.set();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return FAILED;
+        }
+
+    }
+}
+
 //        try {
 //            getConnection();
 //            Statement statement = connection.createStatement();

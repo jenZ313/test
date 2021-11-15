@@ -304,8 +304,10 @@ public class Ini {
 //        QuestionReader q = new Read.Question.ReadMark(1);
 //        int mark = (int) q.read();
 //        System.out.println(mark);
-        Command c = new getStudentAve(1);
-        System.out.println(c.execute());
+//        Command c = new getStudentAve(1);
+//        System.out.println(c.execute());
+        Command c = new gradeTest(1, 1);
+        c.execute();
     }
 
 }
