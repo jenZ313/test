@@ -1,8 +1,10 @@
 import Read.Answer.AnswerReader;
 import Read.Answer.ReadMark;
+import Read.Answer.ReadAnswerByMore;
 import Read.Group.GroupReader;
 import Read.Group.ReadStudents;
 import Read.Question.QuestionReader;
+import Read.Question.ReadID;
 import Read.Question.ReadQuestion;
 import Read.Student.StudentReader;
 import Read.Teacher.ReadTests;
@@ -199,31 +201,47 @@ class checkIdentity extends Command {
 }
 
 //String name, String pass, String email, int type(teacher11, student12)-> USERNAMEALREADYUSED/SUCCESS/FAILED
-class registerCommand extends Command {
+class registerTeacher extends Command {
     private final String name;
     private final String pass;
     private final String email;
-    private final int type;
 
-    public registerCommand(String name, String pass, String email, int type) {
+    public registerTeacher(String name, String pass, String email) {
         this.name = name;
         this.pass = pass;
         this.email = email;
-        this.type = type;
+
     }
 
     @Override
     public Object execute() {
-        //register as a student
-        if (type == STUDENT) {
-            StudentWriter studentWriter = new WriteNewStudent(name, pass, email, type);
-            return studentWriter.set();
-        }
-        //register as a teacher
-        else {
-            TeacherWriter teacherWriter = new WriteNewTeacher(name, pass, email, type);
-            return teacherWriter.set();
-        }
+
+        TeacherWriter teacherWriter = new WriteNewTeacher(name, pass, email, TEACHER);
+        return teacherWriter.set();
+
+
+    }
+}
+
+//String name, String pass, String email, int type(teacher11, student12)-> USERNAMEALREADYUSED/SUCCESS/FAILED
+class registerStudent extends Command {
+    private final String name;
+    private final String pass;
+    private final String email;
+
+
+    public registerStudent(String name, String pass, String email) {
+        this.name = name;
+        this.pass = pass;
+        this.email = email;
+
+    }
+
+    @Override
+    public Object execute() {
+
+        StudentWriter studentWriter = new WriteNewStudent(name, pass, email, STUDENT);
+        return studentWriter.set();
 
 
     }
@@ -364,13 +382,14 @@ class deleteGroupCommand extends Command {
 class createTestCommand extends Command {
     private final String name;
     private final int author;
-    private final int price = 90;
+    private final int price;
     private final java.util.Date date;
 
-    public createTestCommand(String name, int author, java.util.Date date) {
+    public createTestCommand(String name, int author, java.util.Date date, int price) {
         this.name = name;
         this.author = author;
         this.date = date;
+        this.price = price;
     }
 
     @Override
@@ -463,6 +482,11 @@ class addQuestionToTestCommand extends Command {
     public addQuestionToTestCommand(int questionID, int testID) {
         this.questionID = questionID;
         this.testID = testID;
+    }
+
+    public addQuestionToTestCommand(int testID, String question, String answer, int mark) {
+        this.testID = testID;
+        this.questionID = (int) new ReadID(question, answer).read();
     }
 
     @Override
@@ -587,76 +611,6 @@ class gradeTest extends Command {
 
     }
 }
-
-//        try {
-//            getConnection();
-//            Statement statement = connection.createStatement();
-
-            //get questions
-//            String sql = "select * from " + "TEST" + " where id='" + testID + "'";
-//            ResultSet resultSet = statement.executeQuery(sql);
-//            boolean hasMatch = resultSet.next();
-//            if (!hasMatch) {
-//                statement.close();
-//                connection.close();
-//                return FAILED;
-//            }
-
-//            String questions = resultSet.getString(6);
-//            String[] question = questions.trim().split(",");
-//            int sum = 0;
-//            for (String q : question) {
-//                sql = "select * from " + "QUESTIONANSWER" + " where questionID='" + q + "' and studentID='" + studentID + "'";
-//                resultSet = statement.executeQuery(sql);
-//                hasMatch = resultSet.next();
-//                if (!hasMatch) {
-//                    statement.close();
-//                    connection.close();
-//                    return FAILED;
-//                }
-//                int marks = resultSet.getInt(4);
-//                sum += marks;
-//            }
-//            sql = "insert into TESTANSWER (testID,studentID,mark) VALUE (?,?,?)";
-//            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-//            preparedStatement.setInt(1, testID);
-//            preparedStatement.setInt(2, studentID);
-//            preparedStatement.setInt(3, sum);
-//            preparedStatement.executeUpdate();
-//            sql = "select * from " + STUDENTTABLENAME + " where id='" + studentID + "'";
-//            resultSet = statement.executeQuery(sql);
-//            resultSet.next();
-//            String alltests = resultSet.getString(8);//in the form of "1,2,3,4"
-//            ////add groupID to the string
-//            if (isInString(alltests, testID, ",")) {
-//                statement.close();
-//                connection.close();
-//                return GROUPALREADYJOINED;
-//            }
-//            if (alltests.length() == 0) {
-//                alltests = testID + " ";
-//            } else {
-//                alltests = alltests + "," + testID;
-//            }
-//            ////rewrite the new string to the database
-//            sql = "update STUDENT set testID = ? where id = ?";
-//            preparedStatement = connection.prepareStatement(sql);
-//            preparedStatement.setString(1, alltests);
-//            preparedStatement.setInt(2, studentID);
-//            preparedStatement.executeUpdate();
-//
-//            statement.close();
-//            connection.close();
-//            Command c = new autoGrade();
-//            c.execute();
-//            return SUCCESS;
-//
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//            return FAILED;
-//        }
-//    }
-//}
 
 //int studentID, int groupID --> int student average
 class getStudentAve extends Command {

@@ -1,9 +1,9 @@
 package Read.Answer;
 
-public class ReadAnswer extends AnswerReader {
+public class ReadAnswerByID extends AnswerReader {
     private final int ID;
 
-    public ReadAnswer(int ID) {
+    public ReadAnswerByID(int ID) {
         this.ID = ID;
     }
 

@@ -15,7 +15,7 @@ public class ReadGroups extends StudentReader {
         String sql = "select * from " + TABLE + " where id='" + studentID + "'";
         String groups = (String) readInfo(sql, GROUPSCol, STRING);
         String IDs = (String) readInfo(sql, IDCol, STRING);
-        if (groups == FAILED + "") {
+        if (groups.equals(FAILED + "")) {
             return FAILED;
         }
 

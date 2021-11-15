@@ -1,11 +1,10 @@
 package Write.Answer;
 
 import Read.Answer.AnswerReader;
-import Read.Answer.ReadAnswer;
+import Read.Answer.ReadAnswerByID;
 import Read.Answer.ReadID;
 import Read.Answer.ReadQuestionID;
 import Read.Question.QuestionReader;
-import Read.Question.ReadMark;
 
 import java.sql.*;
 
@@ -24,7 +23,7 @@ public class AutoGrade extends AnswerWriter {
                 return FAILED;
             }
 
-            String studentAnswer = (String) new ReadAnswer(answerID).read();
+            String studentAnswer = (String) new ReadAnswerByID(answerID).read();
             int questionID = (int) new ReadQuestionID(answerID).read();
 
 
