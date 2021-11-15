@@ -495,6 +495,7 @@ class submitAnswerCommand extends Command {
                     return FAILED;
                 }
             }
+            return SUCCESS;
         } catch (Exception e) {
             e.printStackTrace();
             return FAILED;
@@ -534,122 +535,122 @@ class gradeQuestion extends Command {
         return answerWriter.set();
     }
 }
-
-//int studentID, int testID --> int mark/FAILED
-class gradeTest extends Command {
-    private final int studentID;
-    private final int testID;
-
-    public gradeTest(int studentID, int testID) {
-        this.studentID = studentID;
-        this.testID = testID;
-    }
-
-    @Override
-    public Object execute() {
-        try {
-            getConnection();
-            Statement statement = connection.createStatement();
-
-            //get student answer
-            String sql = "select * from " + "TEST" + " where id='" + testID + "'";
-            ResultSet resultSet = statement.executeQuery(sql);
-            boolean hasMatch = resultSet.next();
-            if (!hasMatch) {
-                statement.close();
-                connection.close();
-                return FAILED;
-            }
-            String questions = resultSet.getString(6);
-            String[] question = questions.trim().split(",");
-            int sum = 0;
-            for (String q : question) {
-                sql = "select * from " + "QUESTIONANSWER" + " where questionID='" + q + "' and studentID='" + studentID + "'";
-                resultSet = statement.executeQuery(sql);
-                hasMatch = resultSet.next();
-                if (!hasMatch) {
-                    statement.close();
-                    connection.close();
-                    return FAILED;
-                }
-                int marks = resultSet.getInt(4);
-                sum += marks;
-            }
-            sql = "insert into TESTANSWER (testID,studentID,mark) VALUE (?,?,?)";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setInt(1, testID);
-            preparedStatement.setInt(2, studentID);
-            preparedStatement.setInt(3, sum);
-            preparedStatement.executeUpdate();
-            sql = "select * from " + STUDENTTABLENAME + " where id='" + studentID + "'";
-            resultSet = statement.executeQuery(sql);
-            resultSet.next();
-            String alltests = resultSet.getString(8);//in the form of "1,2,3,4"
-            ////add groupID to the string
-            if (isInString(alltests, testID, ",")) {
-                statement.close();
-                connection.close();
-                return GROUPALREADYJOINED;
-            }
-            if (alltests.length() == 0) {
-                alltests = testID + " ";
-            } else {
-                alltests = alltests + "," + testID;
-            }
-            ////rewrite the new string to the database
-            sql = "update STUDENT set testID = ? where id = ?";
-            preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, alltests);
-            preparedStatement.setInt(2, studentID);
-            preparedStatement.executeUpdate();
-
-            statement.close();
-            connection.close();
-            Command c = new autoGrade();
-            c.execute();
-            return SUCCESS;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return FAILED;
-        }
-    }
-}
-
-//int studentID, int groupID --> int student average
-class getStudentAve extends Command {
-    private final int studentID;
-
-    public getStudentAve(int studentID) {
-        this.studentID = studentID;
-    }
-
-    @Override
-    public Object execute() {
-        try {
-            getConnection();
-            Statement statement = connection.createStatement();
-
-            //get student answer
-            String sql = "select * from " + "TESTANSWER" + " where studentID='" + studentID + "'";
-            ResultSet resultSet = statement.executeQuery(sql);
-            boolean hasMatch = resultSet.next();
-            if (!hasMatch) {
-                statement.close();
-                connection.close();
-                return 0;
-            }
-            int time = 1;
-            int total = resultSet.getInt(4);
-            while (resultSet.next()) {
-                total += resultSet.getInt(4);
-                time += 1;
-            }
-            return total * 1.0 / time;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return FAILED;
-        }
-    }
-}
+//
+////int studentID, int testID --> int mark/FAILED
+//class gradeTest extends Command {
+//    private final int studentID;
+//    private final int testID;
+//
+//    public gradeTest(int studentID, int testID) {
+//        this.studentID = studentID;
+//        this.testID = testID;
+//    }
+//
+//    @Override
+//    public Object execute() {
+//        try {
+//            getConnection();
+//            Statement statement = connection.createStatement();
+//
+//            //get student answer
+//            String sql = "select * from " + "TEST" + " where id='" + testID + "'";
+//            ResultSet resultSet = statement.executeQuery(sql);
+//            boolean hasMatch = resultSet.next();
+//            if (!hasMatch) {
+//                statement.close();
+//                connection.close();
+//                return FAILED;
+//            }
+//            String questions = resultSet.getString(6);
+//            String[] question = questions.trim().split(",");
+//            int sum = 0;
+//            for (String q : question) {
+//                sql = "select * from " + "QUESTIONANSWER" + " where questionID='" + q + "' and studentID='" + studentID + "'";
+//                resultSet = statement.executeQuery(sql);
+//                hasMatch = resultSet.next();
+//                if (!hasMatch) {
+//                    statement.close();
+//                    connection.close();
+//                    return FAILED;
+//                }
+//                int marks = resultSet.getInt(4);
+//                sum += marks;
+//            }
+//            sql = "insert into TESTANSWER (testID,studentID,mark) VALUE (?,?,?)";
+//            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+//            preparedStatement.setInt(1, testID);
+//            preparedStatement.setInt(2, studentID);
+//            preparedStatement.setInt(3, sum);
+//            preparedStatement.executeUpdate();
+//            sql = "select * from " + STUDENTTABLENAME + " where id='" + studentID + "'";
+//            resultSet = statement.executeQuery(sql);
+//            resultSet.next();
+//            String alltests = resultSet.getString(8);//in the form of "1,2,3,4"
+//            ////add groupID to the string
+//            if (isInString(alltests, testID, ",")) {
+//                statement.close();
+//                connection.close();
+//                return GROUPALREADYJOINED;
+//            }
+//            if (alltests.length() == 0) {
+//                alltests = testID + " ";
+//            } else {
+//                alltests = alltests + "," + testID;
+//            }
+//            ////rewrite the new string to the database
+//            sql = "update STUDENT set testID = ? where id = ?";
+//            preparedStatement = connection.prepareStatement(sql);
+//            preparedStatement.setString(1, alltests);
+//            preparedStatement.setInt(2, studentID);
+//            preparedStatement.executeUpdate();
+//
+//            statement.close();
+//            connection.close();
+//            Command c = new autoGrade();
+//            c.execute();
+//            return SUCCESS;
+//
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//            return FAILED;
+//        }
+//    }
+//}
+//
+////int studentID, int groupID --> int student average
+//class getStudentAve extends Command {
+//    private final int studentID;
+//
+//    public getStudentAve(int studentID) {
+//        this.studentID = studentID;
+//    }
+//
+//    @Override
+//    public Object execute() {
+//        try {
+//            getConnection();
+//            Statement statement = connection.createStatement();
+//
+//            //get student answer
+//            String sql = "select * from " + "TESTANSWER" + " where studentID='" + studentID + "'";
+//            ResultSet resultSet = statement.executeQuery(sql);
+//            boolean hasMatch = resultSet.next();
+//            if (!hasMatch) {
+//                statement.close();
+//                connection.close();
+//                return 0;
+//            }
+//            int time = 1;
+//            int total = resultSet.getInt(4);
+//            while (resultSet.next()) {
+//                total += resultSet.getInt(4);
+//                time += 1;
+//            }
+//            return total * 1.0 / time;
+//
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//            return FAILED;
+//        }
+//    }
+//}
