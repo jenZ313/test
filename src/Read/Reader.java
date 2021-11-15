@@ -38,6 +38,7 @@ public abstract class Reader implements Readable {
                 connection.close();
                 return true;
             }
+            connection.close();
             return false;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -53,12 +54,17 @@ public abstract class Reader implements Readable {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             if (!resultSet.next()) {
+                connection.close();
                 return FAILED;
             }
             if (type == INT) {
-                return resultSet.getInt(col);
+                int result = resultSet.getInt(col);
+                connection.close();
+                return result;
             } else {
-                return resultSet.getString(col);
+                String result = resultSet.getString(col);
+                connection.close();
+                return result;
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -73,6 +79,7 @@ public abstract class Reader implements Readable {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             if (!resultSet.next()) {
+                connection.close();
                 return FAILED;
             }
             if (type == INT) {
@@ -81,6 +88,7 @@ public abstract class Reader implements Readable {
                 while (resultSet.next()) {
                     intList.add(resultSet.getInt(col));
                 }
+                connection.close();
                 return intList;
             } else {
                 ArrayList<String> stringList = new ArrayList<>();
@@ -88,6 +96,7 @@ public abstract class Reader implements Readable {
                 while (resultSet.next()) {
                     stringList.add(resultSet.getString(col));
                 }
+                connection.close();
                 return stringList;
             }
         } catch (SQLException throwables) {

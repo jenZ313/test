@@ -19,7 +19,7 @@ public class ReadAllMarks extends TestReader {
         }
 
         String[] questionList = allQuestionID.split(",");
-        int[] marks = new int[questionList.length - 1];
+        int[] marks = new int[questionList.length];
         for (int i = 0; i < questionList.length; i++) {
             QuestionReader questionReader = new ReadMark(Integer.parseInt(questionList[i]));
             marks[i] = (int) questionReader.read();

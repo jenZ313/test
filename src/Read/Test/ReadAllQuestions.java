@@ -19,7 +19,7 @@ public class ReadAllQuestions extends TestReader {
         }
 
         String[] questionList = allQuestionID.split(",");
-        String[] questions = new String[questionList.length - 1];
+        String[] questions = new String[questionList.length];
         for (int i = 0; i < questionList.length; i++) {
             QuestionReader questionReader = new ReadQuestion(Integer.parseInt(questionList[i]));
             questions[i] = (String) questionReader.read();
