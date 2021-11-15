@@ -59,6 +59,21 @@ public abstract class Writer implements Writable {
             return FAILED;
         }
     }
+    public Object updatetest(int testID, int info, String table, String col) {
+        try {
+            Connection connection = getConnection();
+            String sql = "update " + table + " set " + col + " = ? where testID = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, info);
+            preparedStatement.setInt(2, testID);
+            preparedStatement.executeUpdate();
+            connection.close();
+            return SUCCESS;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return FAILED;
+        }
+    }
 
 
 }

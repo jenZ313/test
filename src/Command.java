@@ -1,3 +1,5 @@
+import Read.Answer.AnswerReader;
+import Read.Answer.ReadMark;
 import Read.Group.GroupReader;
 import Read.Group.ReadStudents;
 import Read.Question.QuestionReader;
@@ -6,7 +8,6 @@ import Read.Student.StudentReader;
 import Read.Teacher.ReadTests;
 import Read.Teacher.TeacherReader;
 import Read.Test.*;
-import Read.Test.ReadMark;
 import Write.Answer.AnswerWriter;
 import Write.Answer.AutoGrade;
 import Write.Answer.WriteMark;
@@ -21,6 +22,7 @@ import Write.Teacher.TeacherWriter;
 import Write.Teacher.WriteNewTeacher;
 import Write.Teacher.WriteTests;
 import Write.Test.TestWriter;
+import Write.Test.*;
 import Write.Test.WriteNewTest;
 import Write.Test.WriteQuestions;
 
@@ -481,16 +483,18 @@ class addQuestionToTestCommand extends Command {
     }
 }
 
-//int student id, string[] answer, int test id -> SUCCESS/FAILED
+//int student id, string answer, int question id -> SUCCESS/FAILED
 class submitAnswerCommand extends Command {
     private final String[] answer;
     private final int testID;
     private final int studentID;
+    private final int groupID;
 
-    public submitAnswerCommand(int studentID, String[] answer, int testID) {
+    public submitAnswerCommand(int studentID, String[] answer, int testID, int groupID) {
         this.answer = answer;
         this.testID = testID;
         this.studentID = studentID;
+        this.groupID = groupID;
     }
 
     @Override
@@ -503,23 +507,20 @@ class submitAnswerCommand extends Command {
         try {
             String[] questions = question.trim().split(",");
             for (int i = 0; i < answer.length; i++) {
-                AnswerWriter answerWriter = new WriteNewAnswer(studentID, answer[i], Integer.parseInt(questions[i]));
+                AnswerWriter answerWriter = new WriteNewAnswer(studentID, answer[i], Integer.parseInt(questions[i]), groupID);
                 int result = (int) answerWriter.set();
                 if (result == FAILED) {
                     return FAILED;
                 }
                 Command c = new autoGrade();
-                if ((int) c.execute() == FAILED) {
-                    return FAILED;
-                }
+                c.execute();
             }
-            return SUCCESS;
         } catch (Exception e) {
             e.printStackTrace();
             return FAILED;
         }
 
-    return SUCCESS;
+        return SUCCESS;
     }
 }
 
@@ -566,74 +567,96 @@ class gradeTest extends Command {
 
     @Override
     public Object execute() {
+        TestReader testReader = new ReadQuestions(testID);
+        String question = (String) testReader.read();
         try {
-            getConnection();
-            Statement statement = connection.createStatement();
-
-            //get student answer
-            String sql = "select * from " + "TEST" + " where id='" + testID + "'";
-            ResultSet resultSet = statement.executeQuery(sql);
-            boolean hasMatch = resultSet.next();
-            if (!hasMatch) {
-                statement.close();
-                connection.close();
-                return FAILED;
-            }
-            String questions = resultSet.getString(6);
-            String[] question = questions.trim().split(",");
+            String[] questions = question.trim().split(",");
             int sum = 0;
-            for (String q : question) {
-                sql = "select * from " + "QUESTIONANSWER" + " where questionID='" + q + "' and studentID='" + studentID + "'";
-                resultSet = statement.executeQuery(sql);
-                hasMatch = resultSet.next();
-                if (!hasMatch) {
-                    statement.close();
-                    connection.close();
-                    return FAILED;
-                }
-                int marks = resultSet.getInt(4);
-                sum += marks;
+            for (int i = 0; i < questions.length; i++) {
+                AnswerReader answerReader = new ReadMark(studentID, Integer.parseInt(questions[i]));
+                int mark = (int) answerReader.read();
+                sum += mark;
             }
-            sql = "insert into TESTANSWER (testID,studentID,mark) VALUE (?,?,?)";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setInt(1, testID);
-            preparedStatement.setInt(2, studentID);
-            preparedStatement.setInt(3, sum);
-            preparedStatement.executeUpdate();
-            sql = "select * from " + STUDENTTABLENAME + " where id='" + studentID + "'";
-            resultSet = statement.executeQuery(sql);
-            resultSet.next();
-            String alltests = resultSet.getString(8);//in the form of "1,2,3,4"
-            ////add groupID to the string
-            if (isInString(alltests, testID, ",")) {
-                statement.close();
-                connection.close();
-                return GROUPALREADYJOINED;
-            }
-            if (alltests.length() == 0) {
-                alltests = testID + " ";
-            } else {
-                alltests = alltests + "," + testID;
-            }
-            ////rewrite the new string to the database
-            sql = "update STUDENT set testID = ? where id = ?";
-            preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, alltests);
-            preparedStatement.setInt(2, studentID);
-            preparedStatement.executeUpdate();
-
-            statement.close();
-            connection.close();
-            Command c = new autoGrade();
-            c.execute();
-            return SUCCESS;
-
-        } catch (SQLException e) {
+            TestWriter testWriter = new Write.Test.WriteMark(testID, sum);
+            return testWriter.set();
+        } catch (Exception e) {
             e.printStackTrace();
             return FAILED;
+
         }
+
     }
 }
+
+//        try {
+//            getConnection();
+//            Statement statement = connection.createStatement();
+
+            //get questions
+//            String sql = "select * from " + "TEST" + " where id='" + testID + "'";
+//            ResultSet resultSet = statement.executeQuery(sql);
+//            boolean hasMatch = resultSet.next();
+//            if (!hasMatch) {
+//                statement.close();
+//                connection.close();
+//                return FAILED;
+//            }
+
+//            String questions = resultSet.getString(6);
+//            String[] question = questions.trim().split(",");
+//            int sum = 0;
+//            for (String q : question) {
+//                sql = "select * from " + "QUESTIONANSWER" + " where questionID='" + q + "' and studentID='" + studentID + "'";
+//                resultSet = statement.executeQuery(sql);
+//                hasMatch = resultSet.next();
+//                if (!hasMatch) {
+//                    statement.close();
+//                    connection.close();
+//                    return FAILED;
+//                }
+//                int marks = resultSet.getInt(4);
+//                sum += marks;
+//            }
+//            sql = "insert into TESTANSWER (testID,studentID,mark) VALUE (?,?,?)";
+//            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+//            preparedStatement.setInt(1, testID);
+//            preparedStatement.setInt(2, studentID);
+//            preparedStatement.setInt(3, sum);
+//            preparedStatement.executeUpdate();
+//            sql = "select * from " + STUDENTTABLENAME + " where id='" + studentID + "'";
+//            resultSet = statement.executeQuery(sql);
+//            resultSet.next();
+//            String alltests = resultSet.getString(8);//in the form of "1,2,3,4"
+//            ////add groupID to the string
+//            if (isInString(alltests, testID, ",")) {
+//                statement.close();
+//                connection.close();
+//                return GROUPALREADYJOINED;
+//            }
+//            if (alltests.length() == 0) {
+//                alltests = testID + " ";
+//            } else {
+//                alltests = alltests + "," + testID;
+//            }
+//            ////rewrite the new string to the database
+//            sql = "update STUDENT set testID = ? where id = ?";
+//            preparedStatement = connection.prepareStatement(sql);
+//            preparedStatement.setString(1, alltests);
+//            preparedStatement.setInt(2, studentID);
+//            preparedStatement.executeUpdate();
+//
+//            statement.close();
+//            connection.close();
+//            Command c = new autoGrade();
+//            c.execute();
+//            return SUCCESS;
+//
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//            return FAILED;
+//        }
+//    }
+//}
 
 //int studentID, int groupID --> int student average
 class getStudentAve extends Command {
@@ -650,21 +673,11 @@ class getStudentAve extends Command {
             Statement statement = connection.createStatement();
 
             //get student answer
-            String sql = "select * from " + "TESTANSWER" + " where studentID='" + studentID + "'";
-            ResultSet resultSet = statement.executeQuery(sql);
-            boolean hasMatch = resultSet.next();
-            if (!hasMatch) {
-                statement.close();
-                connection.close();
-                return 0;
-            }
-            int time = 1;
-            int total = resultSet.getInt(4);
-            while (resultSet.next()) {
-                total += resultSet.getInt(4);
-                time += 1;
-            }
-            return total * 1.0 / time;
+
+            TestReader testReader = new ReadAve(studentID);
+            double ave = (double) testReader.read();
+
+            return ave;
 
         } catch (SQLException e) {
             e.printStackTrace();

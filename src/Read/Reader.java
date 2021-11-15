@@ -111,6 +111,7 @@ public abstract class Reader implements Readable {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             if (!resultSet.next()) {
+                connection.close();
                 return FAILED;
             }
             if (type == INT) {
@@ -122,9 +123,38 @@ public abstract class Reader implements Readable {
                     sum += resultSet.getInt(col);
                     time += 1;
                 }
+                connection.close();
                 return sum*1.0/time;
             } else {
+                connection.close();
+                return FAILED;
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return FAILED;
+        }
 
+    }
+    protected Object readsum(String sql, int col, int type) {
+        try {
+            Connection connection = getConnection();
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql);
+            if (!resultSet.next()) {
+                connection.close();
+                return FAILED;
+            }
+            if (type == INT) {
+                ArrayList<Integer> intList = new ArrayList<>();
+                intList.add(resultSet.getInt(col));
+                int sum = resultSet.getInt(col);
+                while (resultSet.next()) {
+                    sum += resultSet.getInt(col);
+                }
+                connection.close();
+                return sum;
+            } else {
+                connection.close();
                 return FAILED;
             }
         } catch (SQLException throwables) {

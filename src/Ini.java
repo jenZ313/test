@@ -177,6 +177,7 @@ public class Ini {
                     " answer VARCHAR(1000), " +
                     " mark INT , " +
                     " studentID INT, " +
+                    " groupID INT, " +
                     " PRIMARY KEY ( id )) CHARACTER SET = utf8";
             statement.executeUpdate(sql);
             System.out.println("Created answer table in given database...");
@@ -304,8 +305,12 @@ public class Ini {
 //        QuestionReader q = new Read.Question.ReadMark(1);
 //        int mark = (int) q.read();
 //        System.out.println(mark);
-        Command c = new getStudentAve(1);
-        System.out.println(c.execute());
+//        Command c = new getStudentAve(1);
+//        System.out.println(c.execute());
+//        iniQAnswerTable();
+//        String[] a = {"苹果", "diyi", "吃饭"};
+//        Command c = new submitAnswerCommand(1, a, 1, 1);
+//        c.execute();
     }
 
 }

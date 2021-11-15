@@ -23,6 +23,10 @@ public abstract class TestWriter extends Writer {
     public Object setTestInfo(String colName, int testID, String info) {
         return updateInfo(testID, info, TABLE, colName);
     }
+    public Object setTestmark(String colName, int testID, int info) {
+        return updatetest(testID, info, "TESTANSWER", colName);
+    }
+
 
     public Object setTestInfo(String colName, int testID, int info) {
         return updateInfo(testID, info, TABLE, colName);
