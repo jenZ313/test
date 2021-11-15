@@ -177,6 +177,7 @@ public class Ini {
                     " answer VARCHAR(1000), " +
                     " mark INT , " +
                     " studentID INT, " +
+                    " groupID INT, " +
                     " PRIMARY KEY ( id )) CHARACTER SET = utf8";
             statement.executeUpdate(sql);
             System.out.println("Created answer table in given database...");

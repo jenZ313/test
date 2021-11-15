@@ -470,11 +470,13 @@ class submitAnswerCommand extends Command {
     private final String[] answer;
     private final int testID;
     private final int studentID;
+    private final int groupID;
 
-    public submitAnswerCommand(int studentID, String[] answer, int testID) {
+    public submitAnswerCommand(int studentID, String[] answer, int testID, int groupID) {
         this.answer = answer;
         this.testID = testID;
         this.studentID = studentID;
+        this.groupID = groupID;
     }
 
     @Override
@@ -487,7 +489,7 @@ class submitAnswerCommand extends Command {
         try {
             String[] questions = question.trim().split(",");
             for (int i = 0; i < answer.length; i++) {
-                AnswerWriter answerWriter = new WriteNewAnswer(studentID, answer[i], Integer.parseInt(questions[i]));
+                AnswerWriter answerWriter = new WriteNewAnswer(studentID, answer[i], Integer.parseInt(questions[i]), groupID);
                 int result = (int) answerWriter.set();
                 if (result == FAILED) {
                     return FAILED;
