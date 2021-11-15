@@ -1,6 +1,7 @@
 import Read.Group.GroupReader;
 import Read.Group.ReadStudents;
 import Read.Student.StudentReader;
+import Read.Teacher.ReadTests;
 import Read.Teacher.TeacherReader;
 import Read.Test.ReadQuestions;
 import Read.Test.TestReader;
@@ -16,6 +17,7 @@ import Write.Student.WriteGroups;
 import Write.Student.WriteNewStudent;
 import Write.Teacher.TeacherWriter;
 import Write.Teacher.WriteNewTeacher;
+import Write.Teacher.WriteTests;
 import Write.Test.TestWriter;
 import Write.Test.WriteNewTest;
 import Write.Test.WriteQuestions;
@@ -370,6 +372,20 @@ class createTestCommand extends Command {
     @Override
     public Object execute() {
         TestWriter testWriter = new WriteNewTest(name, author, price, date);
+        int id = (int) testWriter.set();
+        if (id == FAILED) {
+            return FAILED;
+        }
+
+        TeacherReader teacherReader = new ReadTests(author);
+        String allTest = (String) teacherReader.read();
+        if (allTest.length() == 0) {
+            allTest = "" + id;
+        } else {
+            allTest = allTest + "," + id;
+        }
+
+        TeacherWriter teacherWriter = new WriteTests(author, allTest);
         return testWriter.set();
     }
 }
