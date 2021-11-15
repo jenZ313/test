@@ -96,5 +96,33 @@ public abstract class Reader implements Readable {
         }
 
     }
+    protected Object readaverage(String sql, int col, int type) {
+        try {
+            Connection connection = getConnection();
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql);
+            if (!resultSet.next()) {
+                return FAILED;
+            }
+            if (type == INT) {
+                ArrayList<Integer> intList = new ArrayList<>();
+                intList.add(resultSet.getInt(col));
+                int sum = resultSet.getInt(col);
+                int time = 1;
+                while (resultSet.next()) {
+                    sum += resultSet.getInt(col);
+                    time += 1;
+                }
+                return sum*1.0/time;
+            } else {
+
+                return FAILED;
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return FAILED;
+        }
+
+    }
 }
 
