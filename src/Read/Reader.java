@@ -49,17 +49,21 @@ public abstract class Reader implements Readable {
 
     protected Object readInfo(String sql, int col, int type) {
         try {
-            System.out.println(sql);
             Connection connection = getConnection();
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             if (!resultSet.next()) {
+                connection.close();
                 return FAILED;
             }
             if (type == INT) {
-                return resultSet.getInt(col);
+                int result = resultSet.getInt(col);
+                connection.close();
+                return result;
             } else {
-                return resultSet.getString(col);
+                String result = resultSet.getString(col);
+                connection.close();
+                return result;
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -74,6 +78,7 @@ public abstract class Reader implements Readable {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             if (!resultSet.next()) {
+                connection.close();
                 return FAILED;
             }
             if (type == INT) {
@@ -82,6 +87,7 @@ public abstract class Reader implements Readable {
                 while (resultSet.next()) {
                     intList.add(resultSet.getInt(col));
                 }
+                connection.close();
                 return intList;
             } else {
                 ArrayList<String> stringList = new ArrayList<>();
@@ -89,6 +95,7 @@ public abstract class Reader implements Readable {
                 while (resultSet.next()) {
                     stringList.add(resultSet.getString(col));
                 }
+                connection.close();
                 return stringList;
             }
         } catch (SQLException throwables) {
@@ -103,6 +110,7 @@ public abstract class Reader implements Readable {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             if (!resultSet.next()) {
+                connection.close();
                 return FAILED;
             }
             if (type == INT) {
@@ -114,9 +122,10 @@ public abstract class Reader implements Readable {
                     sum += resultSet.getInt(col);
                     time += 1;
                 }
+                connection.close();
                 return sum*1.0/time;
             } else {
-
+                connection.close();
                 return FAILED;
             }
         } catch (SQLException throwables) {
@@ -131,6 +140,7 @@ public abstract class Reader implements Readable {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             if (!resultSet.next()) {
+                connection.close();
                 return FAILED;
             }
             if (type == INT) {
@@ -140,9 +150,10 @@ public abstract class Reader implements Readable {
                 while (resultSet.next()) {
                     sum += resultSet.getInt(col);
                 }
+                connection.close();
                 return sum;
             } else {
-
+                connection.close();
                 return FAILED;
             }
         } catch (SQLException throwables) {

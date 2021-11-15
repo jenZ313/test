@@ -307,8 +307,10 @@ public class Ini {
 //        System.out.println(mark);
 //        Command c = new getStudentAve(1);
 //        System.out.println(c.execute());
-        Command c = new gradeTest(1, 1);
-        c.execute();
+//        iniQAnswerTable();
+//        String[] a = {"苹果", "diyi", "吃饭"};
+//        Command c = new submitAnswerCommand(1, a, 1, 1);
+//        c.execute();
     }
 
 }

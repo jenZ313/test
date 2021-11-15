@@ -494,8 +494,8 @@ class submitAnswerCommand extends Command {
                 if (result == FAILED) {
                     return FAILED;
                 }
-                Command c = new autoGrade();
-                c.execute();
+            Command c = new autoGrade();
+            c.execute();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -564,6 +564,7 @@ class gradeTest extends Command {
         } catch (Exception e) {
             e.printStackTrace();
             return FAILED;
+
         }
 
     }
