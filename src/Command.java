@@ -386,7 +386,7 @@ class createTestCommand extends Command {
         }
 
         TeacherWriter teacherWriter = new WriteTests(author, allTest);
-        return testWriter.set();
+        return teacherWriter.set();
     }
 }
 
